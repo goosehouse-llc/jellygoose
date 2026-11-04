@@ -164,6 +164,8 @@ struct BaseItem: Decodable, Identifiable, Hashable {
     let seriesName: String?
     let seasonId: String?
     let indexNumber: Int?
+    /// The last episode a file holds, where it holds more than one (a double episode).
+    let indexNumberEnd: Int?
     let parentIndexNumber: Int?
     let productionYear: Int?
     let runTimeTicks: Int64?

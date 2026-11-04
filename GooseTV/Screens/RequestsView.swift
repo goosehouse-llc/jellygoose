@@ -265,7 +265,20 @@ struct RequestsView: View {
         if !seriesGenres.isEmpty { showGenres = seriesGenres }
         problem = shelves.isEmpty ? String(localized: "Seerr couldn't be reached.") : nil
         loaded = true
+        #if DEBUG
+        // GOOSETV_SEERR_OPEN=<words> opens the first show (else film) a search
+        // for them finds, once: for testing and pictures.
+        if !Self.launchOpened, let words = ProcessInfo.processInfo.environment["GOOSETV_SEERR_OPEN"], path.isEmpty,
+           let found = try? await client.search(words), let first = found.first(where: { !$0.isMovie }) ?? found.first {
+            Self.launchOpened = true
+            path.append(first)
+        }
+        #endif
     }
+
+    #if DEBUG
+    private static var launchOpened = false
+    #endif
 
     /// The latest requests the viewer may see, each with its title.
     private static func recent(from client: SeerrClient) async -> [RequestEntry] {

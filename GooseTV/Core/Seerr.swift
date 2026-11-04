@@ -300,6 +300,55 @@ struct SeerrDetails: Decodable {
     }
 }
 
+/// A season's episodes as Seerr lists them, from The Movie Database: every
+/// one there is, whether the library has it or not.
+struct SeerrSeason: Decodable {
+    let episodes: [SeerrEpisode]
+
+    private enum Keys: String, CodingKey { case episodes }
+
+    init(from decoder: Decoder) throws {
+        let box = try decoder.container(keyedBy: Keys.self)
+        // One episode in a shape that isn't expected is left out, not the season.
+        let read = (try? box.decode([Lenient<SeerrEpisode>].self, forKey: .episodes)) ?? []
+        episodes = read.compactMap(\.value)
+    }
+
+    private struct Lenient<T: Decodable>: Decodable {
+        let value: T?
+        init(from decoder: Decoder) throws { value = try? T(from: decoder) }
+    }
+}
+
+struct SeerrEpisode: Decodable, Identifiable {
+    let episodeNumber: Int
+    let name: String?
+    let overview: String?
+    /// The day it first aired, "2018-10-01".
+    let airDate: String?
+    /// A frame from it: the database's whole address, unlike a poster's path.
+    let stillPath: String?
+
+    var id: Int { episodeNumber }
+
+    /// The day it first aired, at midnight UTC, as Seerr counts days.
+    var aired: Date? {
+        guard let airDate else { return nil }
+        return Self.day.date(from: airDate)
+    }
+
+    /// Whether it's been shown yet. One with no date hasn't.
+    var hasAired: Bool { aired.map { $0 <= .now } ?? false }
+
+    private static let day: DateFormatter = {
+        let format = DateFormatter()
+        format.locale = Locale(identifier: "en_US_POSIX")
+        format.timeZone = TimeZone(identifier: "UTC")
+        format.dateFormat = "yyyy-MM-dd"
+        return format
+    }()
+}
+
 /// What the critics and everyone else made of a title, where Seerr knows.
 struct SeerrRatings {
     var critics: Int?
@@ -748,6 +797,11 @@ final class SeerrClient: @unchecked Sendable {
         try await get(path(of: title), query: ["language": Self.language])
     }
 
+    /// One season of a show, episode by episode.
+    func season(_ number: Int, of title: SeerrTitle) async throws -> SeerrSeason {
+        try await get("tv/\(title.tmdbId)/season/\(number)", query: ["language": Self.language])
+    }
+
     /// The genres there are of films, or of shows, each with pictures to
     /// show it by.
     func genres(movies: Bool) async -> [SeerrGenre] {
@@ -924,7 +978,16 @@ final class SeerrClient: @unchecked Sendable {
     func logo(_ path: String?) -> URL? { picture(path, size: "w780_filter(duotone,ffffff,bababa)") }
 
     private func picture(_ path: String?, size: String) -> URL? {
-        guard let path, path.hasPrefix("/") else { return nil }
+        guard var path else { return nil }
+        // An episode's frame comes as the database's whole address at its
+        // original size ("https://image.tmdb.org/t/p/original//abc.jpg"):
+        // its path is what's after the size.
+        if path.hasPrefix("http"), let sizes = path.range(of: "/t/p/") {
+            let rest = path[sizes.upperBound...]
+            guard let slash = rest.firstIndex(of: "/") else { return nil }
+            path = "/" + rest[slash...].drop { $0 == "/" }
+        }
+        guard path.hasPrefix("/") else { return nil }
         return URL(string: base.absoluteString.trimmingCharacters(in: CharacterSet(charactersIn: "/")) + "/imageproxy/tmdb/t/p/\(size)\(path)")
     }
 
@@ -970,6 +1033,22 @@ final class Requests: ObservableObject {
     /// isn't offered again, and Settings is where to connect.
     private static func declinedKey(_ server: any MediaServer) -> String? {
         server.userId.map { "goosetv.seerr.off.\($0)" }
+    }
+
+    /// The episodes of one season of a show that the library has, by number:
+    /// a file holding two counts for both. Nil where the show can't be found
+    /// on the media server, so nothing can be said either way.
+    func libraryEpisodes(of seriesId: String, season: Int) async -> [Int: BaseItem]? {
+        guard let server, (try? await server.item(id: seriesId)) != nil else { return nil }
+        var byNumber: [Int: BaseItem] = [:]
+        // Not the ones the server only knows of from the listings.
+        for episode in await server.libraryEpisodes(of: seriesId, season: season) where !episode.isUpcoming {
+            guard let first = episode.indexNumber else { continue }
+            for number in first...max(first, episode.indexNumberEnd ?? first) where byNumber[number] == nil {
+                byNumber[number] = episode
+            }
+        }
+        return byNumber
     }
 
     /// The Seerr saved for this account, if it connected one.
