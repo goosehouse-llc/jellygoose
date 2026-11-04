@@ -1,0 +1,7 @@
+{
+  "info": { "author": "xcode", "version": 1 },
+  "images": [
+    { "filename": "neon.png", "idiom": "tv", "scale": "1x" },
+    { "filename": "neon@2x.png", "idiom": "tv", "scale": "2x" }
+  ]
+}

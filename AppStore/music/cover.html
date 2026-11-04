@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Northbound cover</title>
+<style>
+  @font-face { font-family: Figtree; font-weight: 600; src: url("../../GooseTV/Resources/Fonts/Figtree-SemiBold.ttf"); }
+  @font-face { font-family: Figtree; font-weight: 800; src: url("../../GooseTV/Resources/Fonts/Figtree-ExtraBold.ttf"); }
+  html, body { margin: 0; padding: 0; background: #1b1033; }
+  .cover { position: relative; width: 1000px; height: 1000px; overflow: hidden; }
+  svg { position: absolute; inset: 0; display: block; }
+  .grain { position: absolute; inset: 0; opacity: .16; mix-blend-mode: overlay; }
+  .artist { position: absolute; left: 70px; top: 66px; font: 600 30px/1 Figtree; letter-spacing: 9px; color: rgba(255, 244, 228, .92); text-transform: uppercase; }
+  .title { position: absolute; left: 64px; bottom: 74px; font: 800 118px/1 Figtree; letter-spacing: -3px; color: #fff6ea; text-shadow: 0 6px 30px rgba(40, 10, 40, .35); }
+</style>
+</head>
+<body>
+<div class="cover">
+  <svg viewBox="0 0 1000 1000" width="1000" height="1000" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#2a1650"/>
+        <stop offset=".38" stop-color="#8a3a78"/>
+        <stop offset=".62" stop-color="#e2735e"/>
+        <stop offset=".80" stop-color="#f6b26b"/>
+        <stop offset="1" stop-color="#f9d68f"/>
+      </linearGradient>
+      <radialGradient id="sun" cx=".5" cy=".5" r=".5">
+        <stop offset="0" stop-color="#fff3d1"/>
+        <stop offset=".55" stop-color="#ffd98a"/>
+        <stop offset="1" stop-color="#ffb35c" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="far" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#b8566f"/><stop offset="1" stop-color="#8d3f68"/>
+      </linearGradient>
+      <linearGradient id="mid" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#6b2f63"/><stop offset="1" stop-color="#4a2357"/>
+      </linearGradient>
+      <linearGradient id="near" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#2f1a45"/><stop offset="1" stop-color="#1a0f2e"/>
+      </linearGradient>
+      <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#f3a76a" stop-opacity=".55"/><stop offset="1" stop-color="#2a1650" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <rect width="1000" height="1000" fill="url(#sky)"/>
+    <!-- The low sun, its glow, and a few thin bands of cloud across it. -->
+    <circle cx="610" cy="560" r="250" fill="url(#sun)" opacity=".55"/>
+    <circle cx="610" cy="560" r="118" fill="#ffe9b8"/>
+    <g fill="#f6b26b" opacity=".55">
+      <rect x="430" y="512" width="380" height="7" rx="3.5"/>
+      <rect x="470" y="540" width="300" height="5" rx="2.5"/>
+      <rect x="520" y="590" width="260" height="6" rx="3"/>
+    </g>
+    <!-- Hills, far to near. -->
+    <path d="M0 640 C 120 590, 220 600, 330 628 S 560 660, 700 612 S 900 570, 1000 600 L1000 1000 L0 1000Z" fill="url(#far)"/>
+    <path d="M0 720 C 140 660, 260 690, 380 712 S 600 742, 760 690 S 930 660, 1000 676 L1000 1000 L0 1000Z" fill="url(#mid)"/>
+    <!-- A lake catching the sun between the hills. -->
+    <path d="M300 760 C 420 744, 640 744, 820 762 L 820 800 C 640 790, 420 790, 300 800Z" fill="url(#water)"/>
+    <g stroke="#ffe0a8" stroke-linecap="round" opacity=".7">
+      <line x1="540" y1="768" x2="680" y2="768" stroke-width="4"/>
+      <line x1="565" y1="781" x2="655" y2="781" stroke-width="3"/>
+    </g>
+    <path d="M0 820 C 160 770, 300 800, 450 826 S 720 860, 860 812 S 960 790, 1000 800 L1000 1000 L0 1000Z" fill="url(#near)"/>
+    <!-- A skein of birds going north, in a loose V. -->
+    <g fill="none" stroke="#2a1440" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" opacity=".88">
+      <path d="M598 282 q 13 -11 26 0 q 13 -11 26 0"/>
+      <path d="M548 318 q 11 -10 22 0 q 11 -10 22 0"/>
+      <path d="M652 322 q 11 -10 22 0 q 11 -10 22 0"/>
+      <path d="M502 352 q 10 -9 20 0 q 10 -9 20 0"/>
+      <path d="M704 358 q 10 -9 20 0 q 10 -9 20 0"/>
+      <path d="M458 384 q 9 -8 18 0 q 9 -8 18 0"/>
+      <path d="M754 392 q 9 -8 18 0 q 9 -8 18 0"/>
+      <path d="M418 414 q 8 -7 16 0 q 8 -7 16 0"/>
+    </g>
+  </svg>
+  <svg class="grain" viewBox="0 0 1000 1000" width="1000" height="1000" xmlns="http://www.w3.org/2000/svg">
+    <filter id="n"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+    <rect width="1000" height="1000" filter="url(#n)"/>
+  </svg>
+  <div class="artist">Juniper Gale</div>
+  <div class="title">Northbound</div>
+</div>
+</body>
+</html>

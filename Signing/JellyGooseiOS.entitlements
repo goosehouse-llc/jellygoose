@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- A CarPlay audio app, granted 2026-10-16: CarPlay's lists in every car,
+	     a film's picture in a car that can show video while it's parked, its
+	     sound otherwise. Audio alone, at App Review's word (iOS 1.7.1 build 101,
+	     Guideline 2.5.1): an app may not hold both the audio and the video
+	     entitlement, and either one plays video where the car allows it. -->
+	<key>com.apple.developer.carplay-audio</key>
+	<true/>
+	<!-- Named explicitly, rather than left to default, so the Top Shelf extension
+	     shares it. It is the same group the app already used. Sam's own car
+	     build signs with JellyGooseiOS-CarScreen.entitlements: keep the two
+	     the same apart from CarPlay video. -->
+	<key>keychain-access-groups</key>
+	<array>
+		<string>$(AppIdentifierPrefix)com.goosehouse.jellygoose</string>
+	</array>
+	<!-- Settings shared between the viewer's devices (SettingsSync): one
+	     store for the iPhone, iPad and Apple TV apps alike. -->
+	<key>com.apple.developer.ubiquity-kvstore-identifier</key>
+	<string>$(TeamIdentifierPrefix)com.goosehouse.jellygoose</string>
+</dict>
+</plist>

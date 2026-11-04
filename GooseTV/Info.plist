@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<!-- The languages the string catalog is translated into, so the system
+	     offers them and the App Store lists them. -->
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>es</string>
+		<string>fr</string>
+		<string>de</string>
+		<string>it</string>
+		<string>pt-BR</string>
+		<string>nl</string>
+		<string>ja</string>
+		<string>zh-Hans</string>
+	</array>
+	<key>CFBundleDisplayName</key>
+	<string>JellyGoose</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(MARKETING_VERSION)</string>
+	<!-- To ask whether the YouTube app is there, for a film's trailer. -->
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>youtube</string>
+	</array>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<!-- Only HTTPS/TLS, which is exempt: this answers App Store Connect's
+	     export-compliance question so uploads don't stop to ask. -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>NSHumanReadableCopyright</key>
+	<string>© 2026 Goosehouse LLC</string>
+	<!-- Written by hand, in the tvOS form: on tvOS CFBundleAlternateIcons is an
+	     array of names, not iOS's dictionary of dictionaries. Xcode's alternate
+	     icon build setting writes the iOS form even for tvOS, and App Store
+	     Connect then refuses the build ("missing the Alternate Icon asset").
+	     Each name is an image stack in Assets.xcassets. -->
+	<key>CFBundleIcons</key>
+	<dict>
+		<key>CFBundlePrimaryIcon</key>
+		<string>App Icon</string>
+		<key>CFBundleAlternateIcons</key>
+		<array>
+			<string>MovieNight</string>
+			<string>PlayBeak</string>
+			<string>Neon</string>
+			<string>PlayTile</string>
+			<string>Marquee</string>
+		</array>
+	</dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Figtree-Regular.ttf</string>
+		<string>Figtree-Medium.ttf</string>
+		<string>Figtree-SemiBold.ttf</string>
+		<string>Figtree-Bold.ttf</string>
+		<string>Figtree-ExtraBold.ttf</string>
+		<string>Figtree-Black.ttf</string>
+		<string>Figtree-Italic.ttf</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+	</array>
+	<key>UIUserInterfaceStyle</key>
+	<string>Dark</string>
+	<!-- Setup asks the local network which Jellyfin servers are on it, so an
+	     address needn't be typed with the remote. -->
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>JellyGoose looks for Jellyfin servers on your network, so you can pick yours instead of typing its address.</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<!-- A home media server is typically plain HTTP, and the viewer types
+		     its address themselves: the app has no fixed domain to pin an
+		     exception to. Plain HTTP is allowed anywhere: at home, over Tailscale
+		     (whose 100.x addresses the system doesn't count as local) and over
+		     the internet, which is the viewer's to decide; the app says so when a
+		     connection isn't encrypted. NSAllowsLocalNetworking must stay out:
+		     with it present the system ignores NSAllowsArbitraryLoads, and a
+		     server's Tailscale address couldn't be reached at all. -->
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<!-- How the Top Shelf hands an item back: jellygoose://item/<id> opens its
+	     page, jellygoose://play/<id> starts it. -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.goosehouse.jellygoose</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>jellygoose</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

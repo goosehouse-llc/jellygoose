@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Sam's own iPhone only, never the App Store (Tools/car-screen.sh): the
+	     app's entitlements with CarPlay video beside CarPlay audio. With both,
+	     iOS gives the app a plain window on the screen of a car that can't show
+	     CarPlay video, and the app draws its own car screen there
+	     (CarScreenSceneDelegate). App Review refused this pair for iOS 1.7.1
+	     (Guideline 2.5.1). Keep the rest the same as JellyGooseiOS.entitlements. -->
+	<key>com.apple.developer.carplay-video</key>
+	<true/>
+	<key>com.apple.developer.carplay-audio</key>
+	<true/>
+	<key>keychain-access-groups</key>
+	<array>
+		<string>$(AppIdentifierPrefix)com.goosehouse.jellygoose</string>
+	</array>
+	<key>com.apple.developer.ubiquity-kvstore-identifier</key>
+	<string>$(TeamIdentifierPrefix)com.goosehouse.jellygoose</string>
+</dict>
+</plist>

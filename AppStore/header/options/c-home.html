@@ -1,0 +1,251 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- The iPhone and iPad version of the product page header (header.html is the
+     Apple TV's): the same jellygoose and water, with a car's screen, an iPad
+     and an iPhone among the screens in place of the television ones.
+     The App Store product page header (iOS 27 / iPadOS 27): 3840 x 1646, 21:9.
+     Drawn at 1920 x 823 CSS pixels and captured at 2x. No text: the app's icon
+     and name sit just under it, and words would need all nine languages. The
+     focal point (the jellygoose, drawn from Tools/render-icon.swift's geometry)
+     stays in the middle, where every crop keeps it; the screens around it are
+     made-up scenes, no one's films. -->
+<style>
+  html, body { margin: 0; width: 1920px; height: 823px; overflow: hidden; background: #070A16; contain: paint; }
+  .stage { position: relative; width: 1920px; height: 823px; overflow: hidden;
+    background: radial-gradient(ellipse 70% 80% at 50% 45%, #15122E 0%, #0A0B18 60%, #05060C 100%); }
+  /* A library's wall of posters, tilted away into the dark: what a media
+     player opens on. Made-up art, no one's films. */
+  .wall { position: absolute; left: -260px; top: -330px; width: 2440px; height: 1500px;
+    transform: perspective(1500px) rotateX(24deg) rotateZ(-7deg); transform-origin: 50% 60%; }
+  .wall .row { display: flex; gap: 22px; margin-bottom: 26px; }
+  .wall .poster { flex: 0 0 auto; width: 128px; height: 192px; border-radius: 12px; overflow: hidden;
+    box-shadow: 0 10px 24px rgba(0,0,0,.5); outline: 1px solid rgba(255,255,255,.08); outline-offset: -1px; }
+  .wall .poster svg { display: block; width: 100%; height: 100%; }
+  /* Dimmed, darkest behind the jellygoose and at the edges. */
+  .shade { position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 30% 46% at 50% 47%, rgba(6,7,14,.88) 0%, rgba(6,7,14,.55) 60%, rgba(6,7,14,0) 100%),
+      radial-gradient(ellipse 78% 86% at 50% 48%, rgba(6,7,14,.40) 0%, rgba(6,7,14,.78) 70%, rgba(6,7,14,.96) 100%),
+      linear-gradient(rgba(6,7,14,.55), rgba(6,7,14,.10) 30%, rgba(6,7,14,.20) 70%, rgba(6,7,14,.85)); }
+  /* A film's timeline along the foot, its playhead glowing. */
+  .scrub { position: absolute; left: 150px; right: 150px; top: 770px; height: 6px; border-radius: 3px; background: rgba(255,255,255,.16); }
+  .scrub .done { position: absolute; left: 0; top: 0; bottom: 0; width: 61%; border-radius: 3px;
+    background: linear-gradient(90deg, #7A45E6, #3C7BF0 70%, #0090DB); box-shadow: 0 0 18px rgba(122,69,230,.55); }
+  .scrub .head { position: absolute; left: 61%; top: 50%; width: 24px; height: 24px; margin: -12px 0 0 -12px; border-radius: 50%;
+    background: #fff; box-shadow: 0 0 0 6px rgba(255,255,255,.12), 0 0 26px rgba(150,170,255,.9); }
+  .halo { position: absolute; left: 960px; top: 400px; width: 1100px; height: 900px; transform: translate(-50%, -50%);
+    background: radial-gradient(closest-side, rgba(122,69,230,.30), rgba(0,144,219,.10) 55%, rgba(0,0,0,0)); }
+  .card { position: absolute; border-radius: 16px; overflow: hidden;
+    box-shadow: 0 24px 60px rgba(0,0,0,.55), 0 0 40px rgba(110,90,240,.22);
+    outline: 1.5px solid rgba(255,255,255,.14); outline-offset: -1.5px; }
+  .card svg { display: block; width: 100%; height: 100%; }
+  .card::after { content: ""; position: absolute; inset: 0; border-radius: inherit;
+    background: linear-gradient(135deg, rgba(255,255,255,.14), rgba(255,255,255,0) 40%); }
+  .far { filter: blur(2.6px) saturate(.8) brightness(.72); }
+  .mid { filter: blur(.9px) brightness(.88); }
+  .goose { position: absolute; left: 960px; top: 405px; transform: translate(-50%, -50%); width: 640px; height: 736px; }
+
+  /* The app's Home: the menu down the side, rows of what's there. Dimmed. */
+  .home { position: absolute; inset: 0; }
+  .rail { position: absolute; left: 0; top: 0; bottom: 0; width: 96px; background: rgba(255,255,255,.04); }
+  .rail i { position: absolute; left: 30px; width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,.18); }
+  .rail i.on { background: linear-gradient(135deg, #7A45E6, #0090DB); }
+  .label { position: absolute; height: 18px; border-radius: 9px; background: rgba(255,255,255,.55); }
+  .row { position: absolute; left: 140px; display: flex; gap: 22px; }
+  .still { width: 300px; height: 169px; border-radius: 14px; overflow: hidden; position: relative; }
+  .still .prog { position: absolute; left: 12px; right: 12px; bottom: 12px; height: 6px; border-radius: 3px; background: rgba(255,255,255,.3); }
+  .still .prog b { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: linear-gradient(90deg, #7A45E6, #0090DB); }
+  .poster { width: 150px; height: 225px; border-radius: 12px; overflow: hidden; }
+  .still svg, .poster svg { display: block; width: 100%; height: 100%; }
+  .shade { position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 28% 46% at 50% 47%, rgba(6,7,14,.8) 0%, rgba(6,7,14,.45) 60%, rgba(6,7,14,0) 100%),
+      radial-gradient(ellipse 80% 90% at 50% 48%, rgba(6,7,14,.25) 0%, rgba(6,7,14,.55) 70%, rgba(6,7,14,.85) 100%); }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="home">
+    <div class="rail"><i class="on" style="top: 150px"></i><i style="top: 214px"></i><i style="top: 278px"></i><i style="top: 342px"></i><i style="top: 406px"></i><i style="top: 470px"></i></div>
+    <div class="label" style="left: 140px; top: 70px; width: 240px"></div>
+    <div class="row" id="stills" style="top: 108px"></div>
+    <div class="label" style="left: 140px; top: 312px; width: 180px"></div>
+    <div class="row" id="posters1" style="top: 350px"></div>
+    <div class="label" style="left: 140px; top: 608px; width: 210px"></div>
+    <div class="row" id="posters2" style="top: 646px"></div>
+  </div>
+  <div class="shade"></div>
+  <div class="halo"></div>
+
+  <!-- Far screens, small and soft. -->
+  <div class="card far" style="left: 150px; top: 96px; width: 190px; height: 107px; transform: rotate(-5deg)">
+    <svg viewBox="0 0 160 90" preserveAspectRatio="xMidYMid slice"><defs>
+      <linearGradient id="aurSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#04121f"/><stop offset="1" stop-color="#0b2f3f"/></linearGradient>
+      <linearGradient id="aur" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3cffb0" stop-opacity="0"/><stop offset=".3" stop-color="#3cffb0" stop-opacity=".8"/><stop offset=".7" stop-color="#a46bff" stop-opacity=".7"/><stop offset="1" stop-color="#a46bff" stop-opacity="0"/></linearGradient></defs>
+      <rect width="160" height="90" fill="url(#aurSky)"/>
+      <path d="M-5 40 C30 10 60 50 95 25 S150 20 170 35 L170 50 C140 35 110 60 80 45 S20 45 -5 60Z" fill="url(#aur)" opacity=".85"/>
+      <path d="M0 78 L25 60 L45 72 L70 52 L95 70 L120 56 L160 76 L160 90 L0 90Z" fill="#06101a"/></svg>
+  </div>
+  <div class="card far" style="left: 600px; top: 52px; width: 104px; height: 156px; transform: rotate(4deg)">
+    <svg viewBox="0 0 100 150" preserveAspectRatio="xMidYMid slice"><defs>
+      <linearGradient id="fog" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fd1a8"/><stop offset="1" stop-color="#0f3b2e"/></linearGradient></defs>
+      <rect width="100" height="150" fill="url(#fog)"/>
+      <g fill="#0b2a20"><path d="M10 150 L22 95 L34 150Z"/><path d="M28 150 L44 80 L60 150Z"/><path d="M55 150 L70 100 L85 150Z"/><path d="M72 150 L90 70 L108 150Z"/></g>
+      <g fill="#061a14"><path d="M-6 150 L8 110 L22 150Z"/><path d="M40 150 L52 115 L64 150Z"/><path d="M80 150 L94 112 L108 150Z"/></g></svg>
+  </div>
+  <div class="card far" style="left: 1690px; top: 330px; width: 200px; height: 113px; transform: rotate(6deg)">
+    <svg viewBox="0 0 160 90" preserveAspectRatio="xMidYMid slice"><defs>
+      <linearGradient id="roseBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2a0f2a"/><stop offset="1" stop-color="#5e1d4a"/></linearGradient>
+      <radialGradient id="planet" cx=".35" cy=".35" r=".8"><stop offset="0" stop-color="#ffb0d0"/><stop offset=".6" stop-color="#d0457f"/><stop offset="1" stop-color="#5a1640"/></radialGradient></defs>
+      <rect width="160" height="90" fill="url(#roseBg)"/>
+      <g fill="#fff" opacity=".7"><circle cx="20" cy="18" r=".9"/><circle cx="140" cy="14" r="1.1"/><circle cx="120" cy="70" r=".8"/><circle cx="36" cy="66" r="1"/><circle cx="64" cy="10" r=".7"/></g>
+      <circle cx="82" cy="46" r="22" fill="url(#planet)"/>
+      <ellipse cx="82" cy="47" rx="40" ry="9" fill="none" stroke="#ffc6dc" stroke-width="2.4" opacity=".75" transform="rotate(-14 82 47)"/></svg>
+  </div>
+
+  <!-- Middle distance. -->
+  <div class="card mid" style="left: 352px; top: 300px; width: 176px; height: 264px; transform: rotate(6deg)">
+    <svg viewBox="0 0 100 150" preserveAspectRatio="xMidYMid slice"><defs>
+      <linearGradient id="dawn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff8a5c"/><stop offset=".6" stop-color="#ffcf7a"/><stop offset="1" stop-color="#ffe3a8"/></linearGradient></defs>
+      <rect width="100" height="150" fill="url(#dawn)"/>
+      <circle cx="62" cy="78" r="16" fill="#fff4cf"/>
+      <path d="M0 96 L22 70 L40 88 L60 62 L82 86 L100 74 L100 150 L0 150Z" fill="#8a3a52"/>
+      <path d="M0 112 L18 96 L38 110 L58 92 L78 108 L100 98 L100 150 L0 150Z" fill="#5a2244"/>
+      <path d="M0 128 L26 116 L50 126 L74 114 L100 124 L100 150 L0 150Z" fill="#2c1230"/></svg>
+  </div>
+  <div class="card mid" style="left: 1408px; top: 400px; width: 180px; height: 270px; transform: rotate(-5deg)">
+    <svg viewBox="0 0 100 150" preserveAspectRatio="xMidYMid slice"><defs>
+      <linearGradient id="blueHour" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14215e"/><stop offset=".55" stop-color="#4a6fd4"/><stop offset="1" stop-color="#c4a8ec"/></linearGradient></defs>
+      <rect width="100" height="150" fill="url(#blueHour)"/>
+      <circle cx="74" cy="30" r="7" fill="#f3f0d8" opacity=".95"/>
+      <g fill="#0d1233"><rect x="4" y="88" width="14" height="62"/><rect x="20" y="70" width="16" height="80"/><rect x="38" y="96" width="12" height="54"/><rect x="52" y="58" width="18" height="92"/><rect x="72" y="84" width="12" height="66"/><rect x="86" y="74" width="14" height="76"/></g>
+      <g fill="#ffd36b"><rect x="24" y="78" width="2.4" height="2.4"/><rect x="30" y="90" width="2.4" height="2.4"/><rect x="56" y="66" width="2.4" height="2.4"/><rect x="62" y="80" width="2.4" height="2.4"/><rect x="56" y="98" width="2.4" height="2.4"/><rect x="89" y="84" width="2.4" height="2.4"/><rect x="8" y="98" width="2.4" height="2.4"/><rect x="75" y="96" width="2.4" height="2.4"/><rect x="42" y="106" width="2.4" height="2.4"/><rect x="64" y="112" width="2.4" height="2.4"/></g></svg>
+  </div>
+
+  <!-- Near screens, large and sharp, out at the sides. -->
+  <div class="card" style="left: 60px; top: 540px; width: 430px; height: 172px; transform: rotate(-4deg); border-radius: 22px">
+    <!-- A car's screen: CarPlay, Continue Watching down the side and a channel playing as sound. -->
+    <svg viewBox="0 0 250 100" preserveAspectRatio="xMidYMid slice"><defs>
+      <linearGradient id="carBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#151a3a"/><stop offset="1" stop-color="#090b18"/></linearGradient>
+      <linearGradient id="carAcc" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7a45e6"/><stop offset="1" stop-color="#0090db"/></linearGradient>
+      <linearGradient id="carT1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5b3fa8"/><stop offset=".6" stop-color="#ff7e5f"/><stop offset="1" stop-color="#2b4c7e"/></linearGradient>
+      <linearGradient id="carT2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fd1a8"/><stop offset="1" stop-color="#0f3b2e"/></linearGradient>
+      <linearGradient id="carT3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffcf6b"/><stop offset="1" stop-color="#ff5e62"/></linearGradient></defs>
+      <rect width="250" height="100" fill="url(#carBg)"/>
+      <rect width="26" height="100" fill="#05060d"/>
+      <rect x="7" y="18" width="12" height="12" rx="3.5" fill="#2a8f4a"/><rect x="7" y="36" width="12" height="12" rx="3.5" fill="url(#carAcc)"/><rect x="7" y="54" width="12" height="12" rx="3.5" fill="#2f6fd6"/>
+      <path d="M11.5 39.5 L11.5 44.5 L16 42 Z" fill="#fff"/>
+      <rect x="34" y="8" width="28" height="8" rx="4" fill="url(#carAcc)"/><rect x="68" y="10" width="22" height="4" rx="2" fill="#fff" opacity=".35"/><rect x="96" y="10" width="20" height="4" rx="2" fill="#fff" opacity=".35"/>
+      <g><rect x="34" y="24" width="112" height="20" rx="4" fill="#fff" opacity=".07"/><rect x="37" y="27" width="22" height="14" rx="2.5" fill="url(#carT1)"/><rect x="64" y="29" width="50" height="4" rx="2" fill="#fff" opacity=".85"/><rect x="64" y="36" width="34" height="3" rx="1.5" fill="#fff" opacity=".4"/></g>
+      <g><rect x="34" y="48" width="112" height="20" rx="4" fill="#fff" opacity=".05"/><rect x="37" y="51" width="22" height="14" rx="2.5" fill="url(#carT2)"/><rect x="64" y="53" width="40" height="4" rx="2" fill="#fff" opacity=".85"/><rect x="64" y="60" width="28" height="3" rx="1.5" fill="#fff" opacity=".4"/></g>
+      <g><rect x="34" y="72" width="112" height="20" rx="4" fill="#fff" opacity=".05"/><rect x="37" y="75" width="22" height="14" rx="2.5" fill="url(#carT3)"/><rect x="64" y="77" width="46" height="4" rx="2" fill="#fff" opacity=".85"/><rect x="64" y="84" width="30" height="3" rx="1.5" fill="#fff" opacity=".4"/></g>
+      <rect x="154" y="24" width="88" height="68" rx="7" fill="#fff" opacity=".06"/>
+      <rect x="162" y="30" width="72" height="30" rx="4" fill="#1c2559"/><circle cx="170" cy="36" r="2.4" fill="#e5484d"/>
+      <g fill="url(#carAcc)"><rect x="185" y="66" width="2.4" height="8" rx="1.2"/><rect x="190" y="63" width="2.4" height="14" rx="1.2"/><rect x="195" y="67" width="2.4" height="6" rx="1.2"/><rect x="200" y="64" width="2.4" height="12" rx="1.2"/><rect x="205" y="66" width="2.4" height="8" rx="1.2"/></g>
+      <g fill="#fff" opacity=".85"><path d="M172 84 l6 -4 v8 z M178 84 l6 -4 v8 z"/><rect x="194" y="80" width="2.6" height="8" rx="1"/><rect x="199" y="80" width="2.6" height="8" rx="1"/><path d="M226 84 l-6 -4 v8 z M220 84 l-6 -4 v8 z"/></g></svg>
+  </div>
+  <div class="card" style="left: 1500px; top: 64px; width: 330px; height: 248px; transform: rotate(4deg); border-radius: 22px; outline: 7px solid #1a1d2b; outline-offset: -7px">
+    <!-- An iPad on its side: Live TV's guide, the channel that's on in the corner. -->
+    <svg viewBox="0 0 160 120" preserveAspectRatio="xMidYMid slice"><defs>
+      <linearGradient id="padBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b1640"/><stop offset="1" stop-color="#0b0c1c"/></linearGradient>
+      <linearGradient id="padAcc" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7a45e6"/><stop offset="1" stop-color="#0090db"/></linearGradient>
+      <radialGradient id="padPic" cx=".4" cy=".4" r=".8"><stop offset="0" stop-color="#ff9ad5"/><stop offset=".5" stop-color="#7a45e6"/><stop offset="1" stop-color="#1b0f40"/></radialGradient></defs>
+      <rect width="160" height="120" fill="url(#padBg)"/>
+      <rect width="12" height="120" fill="#0b0c1a"/><circle cx="6" cy="14" r="2.6" fill="url(#padAcc)"/><g fill="#fff" opacity=".35"><circle cx="6" cy="26" r="1.6"/><circle cx="6" cy="36" r="1.6"/><circle cx="6" cy="46" r="1.6"/></g>
+      <rect x="18" y="10" width="40" height="5" rx="2.5" fill="#fff" opacity=".9"/><rect x="18" y="19" width="26" height="3" rx="1.5" fill="#fff" opacity=".4"/>
+      <rect x="104" y="7" width="48" height="27" rx="3" fill="url(#padPic)"/><g fill="#fff" opacity=".8"><circle cx="113" cy="15" r=".8"/><circle cx="141" cy="27" r=".9"/></g>
+      <g fill="#fff"><rect x="18" y="42" width="12" height="10" rx="2" opacity=".14"/><rect x="33" y="42" width="34" height="10" rx="2" opacity=".2" stroke="#a873f2" stroke-width=".8"/><rect x="69" y="42" width="44" height="10" rx="2" opacity=".1"/><rect x="115" y="42" width="40" height="10" rx="2" opacity=".1"/>
+      <rect x="18" y="55" width="12" height="10" rx="2" opacity=".14"/><rect x="33" y="55" width="70" height="10" rx="2" opacity=".1"/><rect x="105" y="55" width="50" height="10" rx="2" opacity=".1"/>
+      <rect x="18" y="68" width="12" height="10" rx="2" opacity=".14"/><rect x="33" y="68" width="30" height="10" rx="2" opacity=".1"/><rect x="65" y="68" width="38" height="10" rx="2" opacity=".1"/><rect x="105" y="68" width="50" height="10" rx="2" opacity=".1"/>
+      <rect x="18" y="81" width="12" height="10" rx="2" opacity=".14"/><rect x="33" y="81" width="52" height="10" rx="2" opacity=".1"/><rect x="87" y="81" width="68" height="10" rx="2" opacity=".1"/>
+      <rect x="18" y="94" width="12" height="10" rx="2" opacity=".14"/><rect x="33" y="94" width="24" height="10" rx="2" opacity=".1"/><rect x="59" y="94" width="44" height="10" rx="2" opacity=".1"/><rect x="105" y="94" width="50" height="10" rx="2" opacity=".1"/></g>
+      <line x1="52" y1="38" x2="52" y2="108" stroke="#a873f2" stroke-width=".9"/></svg>
+  </div>
+  <div class="card" style="left: 1680px; top: 446px; width: 162px; height: 332px; transform: rotate(5deg); border-radius: 34px; outline: 6px solid #1a1d2b; outline-offset: -6px">
+    <!-- An iPhone: a film's page, its picture over Continue Watching. -->
+    <svg viewBox="0 0 100 205" preserveAspectRatio="xMidYMid slice"><defs>
+      <linearGradient id="phBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14112e"/><stop offset="1" stop-color="#07080f"/></linearGradient>
+      <linearGradient id="phPic" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffcf6b"/><stop offset="1" stop-color="#ff7b54"/></linearGradient>
+      <linearGradient id="phAcc" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7a45e6"/><stop offset="1" stop-color="#0090db"/></linearGradient>
+      <linearGradient id="phT1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fd1a8"/><stop offset="1" stop-color="#0f3b2e"/></linearGradient>
+      <linearGradient id="phT2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14215e"/><stop offset="1" stop-color="#c4a8ec"/></linearGradient></defs>
+      <rect width="100" height="205" fill="url(#phBg)"/>
+      <rect x="36" y="6" width="28" height="7" rx="3.5" fill="#000"/>
+      <rect x="6" y="20" width="88" height="70" rx="8" fill="url(#phPic)"/>
+      <circle cx="56" cy="52" r="14" fill="#fff1c4" opacity=".95"/>
+      <path d="M6 72 C26 62 44 78 64 70 S88 66 94 68 L94 82 Q94 90 86 90 L14 90 Q6 90 6 82 Z" fill="#d0602f"/>
+      <rect x="30" y="96" width="40" height="10" rx="5" fill="url(#phAcc)"/>
+      <rect x="8" y="116" width="36" height="4" rx="2" fill="#fff" opacity=".8"/>
+      <rect x="8" y="126" width="40" height="26" rx="4" fill="url(#phT1)"/><rect x="52" y="126" width="40" height="26" rx="4" fill="url(#phT2)"/>
+      <rect x="8" y="154" width="24" height="2.4" rx="1.2" fill="url(#phAcc)"/>
+      <rect x="8" y="164" width="30" height="4" rx="2" fill="#fff" opacity=".8"/>
+      <rect x="8" y="174" width="40" height="18" rx="4" fill="#fff" opacity=".1"/><rect x="52" y="174" width="40" height="18" rx="4" fill="#fff" opacity=".1"/>
+      <rect x="0" y="194" width="100" height="11" fill="#0d0e18"/><g fill="#fff" opacity=".45"><circle cx="18" cy="199" r="2"/><circle cx="34" cy="199" r="2"/><circle cx="50" cy="199" r="2"/><circle cx="66" cy="199" r="2"/><circle cx="82" cy="199" r="2"/></g></svg>
+  </div>
+
+  <!-- The jellygoose. -->
+  <svg class="goose" viewBox="104 6 210 242">
+    <defs>
+      <linearGradient id="bellGlow" gradientUnits="userSpaceOnUse" x1="126" y1="40" x2="274" y2="160"><stop offset="0" stop-color="#7A45E6"/><stop offset="1" stop-color="#0090DB"/></linearGradient>
+      <linearGradient id="bellFill" gradientUnits="userSpaceOnUse" x1="150" y1="44" x2="250" y2="162"><stop offset="0" stop-color="#A98CFF"/><stop offset=".45" stop-color="#8A6BF2"/><stop offset="1" stop-color="#6A5BE0"/></linearGradient>
+      <radialGradient id="shine" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="34"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".7" stop-color="#fff" stop-opacity=".16"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+      <linearGradient id="strand" gradientUnits="userSpaceOnUse" x1="0" y1="150" x2="0" y2="236"><stop offset="0" stop-color="#B49BFF" stop-opacity=".95"/><stop offset=".5" stop-color="#8FA9F0" stop-opacity=".6"/><stop offset="1" stop-color="#5E86C8" stop-opacity=".12"/></linearGradient>
+      <linearGradient id="beak" gradientUnits="userSpaceOnUse" x1="264" y1="97" x2="297" y2="135"><stop offset="0" stop-color="#FFC24A"/><stop offset="1" stop-color="#EE8412"/></linearGradient>
+      <path id="bell" d="M129 145 C129 22 274 22 274 145 C264 156 247.75 156 237.75 145 C227.75 156 211.5 156 201.5 145 C191.5 156 175.25 156 165.25 145 C155.25 156 139 156 129 145Z"/>
+      <clipPath id="bellClip"><use href="#bell"/></clipPath>
+      <filter id="blur14" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="14"/></filter>
+      <filter id="blur6" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter>
+    </defs>
+    <!-- Lit from inside: the bell's colour, blurred, under it. -->
+    <use href="#bell" fill="url(#bellGlow)" filter="url(#blur14)" opacity=".85"/>
+    <use href="#bell" fill="url(#bellGlow)" filter="url(#blur6)" opacity=".35"/>
+    <g fill="none" stroke="url(#strand)" stroke-width="4" stroke-linecap="round">
+      <path d="M150 148 C140 172 160 184 150 185 C141 196 157 210 147 222"/>
+      <path d="M175 148 C165 172 185 184 175 190 C166 206 182 220 172 232"/>
+      <path d="M200 148 C190 172 210 184 200 193 C191 212 207 226 197 238"/>
+      <path d="M225 148 C215 172 235 184 225 189 C216 204 232 218 222 230"/>
+      <path d="M250 148 C240 172 260 184 250 182 C241 190 257 204 247 216"/>
+    </g>
+    <use href="#bell" fill="url(#bellFill)"/>
+    <g clip-path="url(#bellClip)">
+      <g transform="translate(170 82) rotate(-24.06)">
+        <ellipse cx="0" cy="0" rx="29" ry="13" fill="url(#shine)"/>
+      </g>
+    </g>
+    <circle cx="224" cy="99" r="8" fill="#12102A"/>
+    <circle cx="222.5" cy="96.5" r="2.5" fill="#fff" fill-opacity=".92"/>
+    <path d="M264 97 L296.9 116 L264 135Z" fill="url(#beak)" stroke="#F9A82E" stroke-width="5" stroke-linejoin="round"/>
+  </svg>
+</div>
+<script>
+  // Home's rows, the same every time (a fixed seed): stills part-watched,
+  // then posters, in the screens' own colours. Made up.
+  let seed = 23;
+  const rand = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const pick = a => a[Math.floor(rand() * a.length)];
+  const skies = [['#FF9A5A','#7A2E6E'],['#2B1B5E','#0B0A24'],['#5EC6FF','#1B4E8C'],['#FFD27A','#E2603A'],
+                 ['#8E6BFF','#2A1A66'],['#3CE0B0','#0E3B4A'],['#F25C8A','#3A1240'],['#A9C8FF','#4A5E9C']];
+  const grounds = ['#2A1440','#0E1E2E','#1E2A1A','#3A1820','#141434','#0B2A30'];
+  let n = 0;
+  function art(w, h) {
+    const [a, b] = pick(skies), g = pick(grounds), id = 'h' + (n++), kind = Math.floor(rand() * 4);
+    let s = '';
+    if (kind === 0) s = `<circle cx="${w*.62}" cy="${h*.42}" r="${h*.12}" fill="#FFE6A8" opacity=".9"/><path d="M0 ${h*.8} L${w*.25} ${h*.58} L${w*.45} ${h*.72} L${w*.7} ${h*.5} L${w} ${h*.7} L${w} ${h} L0 ${h}Z" fill="${g}"/>`;
+    if (kind === 1) { let x = 0; while (x < w) { const bw = w*.08 + rand()*w*.1, bh = h*.3 + rand()*h*.45; s += `<rect x="${x}" y="${h-bh}" width="${bw}" height="${bh}" fill="${g}"/>`; x += bw + w*.02; } s += `<circle cx="${w*.8}" cy="${h*.2}" r="${h*.05}" fill="#F4F1E0"/>`; }
+    if (kind === 2) s = `<path d="M0 ${h*.66} Q${w*.25} ${h*.6} ${w*.5} ${h*.66} T${w} ${h*.66} L${w} ${h} L0 ${h}Z" fill="${g}"/><circle cx="${w*.5}" cy="${h*.42}" r="${h*.11}" fill="#FFE6A8" opacity=".85"/>`;
+    if (kind === 3) { for (let i = 0; i < 16; i++) s += `<circle cx="${rand()*w}" cy="${rand()*h*.7}" r="${rand()*1.6+.4}" fill="#fff" opacity="${.4+rand()*.6}"/>`; s += `<circle cx="${w*.55}" cy="${h*.5}" r="${h*.14}" fill="${pick(['#E07A9A','#9A7AE0','#7AC0E0'])}"/><ellipse cx="${w*.55}" cy="${h*.5}" rx="${h*.24}" ry="${h*.05}" fill="none" stroke="#FFE6A8" stroke-opacity=".7" stroke-width="2"/>`; }
+    return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="${w}" height="${h}" fill="url(#${id})"/>${s}</svg>`;
+  }
+  let html = '';
+  for (let i = 0; i < 6; i++) html += `<div class="still">${art(300, 169)}<div class="prog"><b style="width:${20 + Math.floor(rand()*65)}%"></b></div></div>`;
+  document.getElementById('stills').innerHTML = html;
+  for (const row of ['posters1', 'posters2']) {
+    html = '';
+    for (let i = 0; i < 11; i++) html += `<div class="poster">${art(150, 225)}</div>`;
+    document.getElementById(row).innerHTML = html;
+  }
+</script>
+</body>
+</html>

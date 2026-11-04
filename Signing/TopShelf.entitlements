@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- The app's own keychain group, so the shelf can read the session the app saved. -->
+	<!-- As the app: the shelf is the current person's. -->
+	<key>com.apple.developer.user-management</key>
+	<array>
+		<string>runs-as-current-user-with-user-independent-keychain</string>
+	</array>
+	<key>keychain-access-groups</key>
+	<array>
+		<string>$(AppIdentifierPrefix)com.goosehouse.jellygoose</string>
+	</array>
+</dict>
+</plist>

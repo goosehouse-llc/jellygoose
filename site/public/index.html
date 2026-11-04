@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JellyGoose — a Jellyfin client for Apple TV, iPhone, iPad and CarPlay</title>
+<meta name="description" content="JellyGoose is a native Jellyfin app for Apple TV, iPhone and iPad, and in the car with CarPlay: a Home that shows you what's there, MKV films played straight from the file with Dolby Vision intact, live TV you can pause and rewind, and six colour schemes.">
+<meta property="og:title" content="JellyGoose">
+<meta property="og:description" content="Your Jellyfin server on the Apple TV, your iPhone and iPad, and in the car with CarPlay.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jellygoose.app">
+<meta property="og:image" content="https://jellygoose.app/img/hero-home.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<div class="wallpaper" aria-hidden="true"></div>
+
+<header class="topbar">
+  <a class="brand" href="/">
+    <span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></span>
+    <span class="wordmark"><span class="jelly">Jelly</span><span class="goose">Goose</span></span>
+  </a>
+  <nav>
+    <a href="#features">Features</a>
+    <a href="#carplay">CarPlay</a>
+    <a href="#iphone">iPhone &amp; iPad</a>
+    <a href="#themes">Themes</a>
+    <a href="#support">Support</a>
+    <a class="ghost" href="https://apps.apple.com/app/jellygoose/id6814667375">Get the app</a>
+  </nav>
+</header>
+
+<main>
+
+<section class="hero">
+  <div class="hero-copy">
+    <h1>Your Jellyfin library, on the Apple&nbsp;TV, your iPhone and in&nbsp;the&nbsp;car.</h1>
+    <p class="lede">
+      JellyGoose is a native app for your own Jellyfin server, on the Apple&nbsp;TV, the
+      iPhone and the iPad, and in the car with CarPlay. It finds your server, knows
+      who's watching, and plays your files as they are: big, poster-forward browsing,
+      films that start at once and stay smooth, live TV you can pause, and none of the clutter.
+    </p>
+    <p class="badge">Free for 7 days, then one unlock: $4.99 at launch, then $6.99 · Apple&nbsp;TV, iPhone and iPad</p>
+    <div class="cta">
+      <a class="button" href="https://apps.apple.com/app/jellygoose/id6814667375">Get it on the App Store</a>
+      <a class="button ghost" href="#get">Requirements</a>
+    </div>
+    <p class="fineprint">Apple TV · iPhone · iPad · CarPlay · Bring your own Jellyfin server</p>
+  </div>
+  <figure class="hero-shot">
+    <img src="/img/hero-home.jpg" width="2000" height="1125" alt="The JellyGoose home screen: the highlighted show's artwork and logo fill the top of the screen, with a Continue Watching row of films beneath it." fetchpriority="high">
+  </figure>
+</section>
+
+<section id="carplay" class="features">
+  <h2 class="section-title">Take it in the car</h2>
+  <div class="feature">
+    <div class="feature-copy">
+      <span class="eyebrow">CarPlay</span>
+      <h3>Your library on the car's screen</h3>
+      <p>
+        Connect your iPhone and JellyGoose is there in CarPlay, in any car that has it:
+        Continue Watching and Next Up, your libraries from A to Z, your favourites,
+        and Live TV with what's on every channel right now. On iOS 27, search too.
+      </p>
+      <ul class="carplay-points">
+        <li><strong>On the road, you hear it.</strong> A film, an episode or a live channel plays through the car's speakers, from where you left off, and your place goes back to your server.</li>
+        <li><strong>Parked, you can watch it.</strong> In a car that shows video in CarPlay, the picture comes too.</li>
+        <li><strong>Live TV for the drive.</strong> The evening news on the way home, from your own tuner. Next and previous change channel.</li>
+        <li><strong>Audio and subtitles</strong> from the car's screen, and the next episode starts by itself.</li>
+      </ul>
+      <p class="note">Pictures on the car's screen need iOS 27 and a car that supports video in CarPlay, and play only while it's parked. Everywhere else, it's the sound.</p>
+    </div>
+    <figure class="carplay-art">
+      <svg viewBox="0 0 1600 640" role="img" aria-label="An illustration of JellyGoose on a car's CarPlay screen: Continue Watching on the left, and a live channel playing as sound.">
+        <defs>
+          <linearGradient id="cpBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#121633"/><stop offset="1" stop-color="#090b18"/></linearGradient>
+          <linearGradient id="cpAccent" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7a45e6"/><stop offset="1" stop-color="#0090db"/></linearGradient>
+          <linearGradient id="cpT1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5b3fa8"/><stop offset=".55" stop-color="#ff7e5f"/><stop offset="1" stop-color="#2b4c7e"/></linearGradient>
+          <linearGradient id="cpT2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fd1a8"/><stop offset="1" stop-color="#0f3b2e"/></linearGradient>
+          <linearGradient id="cpT3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14215e"/><stop offset=".6" stop-color="#4a6fd4"/><stop offset="1" stop-color="#c4a8ec"/></linearGradient>
+          <linearGradient id="cpT4" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffcf6b"/><stop offset="1" stop-color="#ff5e62"/></linearGradient>
+          <radialGradient id="cpGlow" cx=".5" cy=".5" r=".6"><stop offset="0" stop-color="#7a45e6" stop-opacity=".45"/><stop offset="1" stop-color="#7a45e6" stop-opacity="0"/></radialGradient>
+        </defs>
+        <rect width="1600" height="640" fill="url(#cpBg)"/>
+        <!-- The car's own strip down the side: clock, signal, a few apps. -->
+        <rect width="150" height="640" fill="#06070f"/>
+        <text x="75" y="58" fill="#f4f4f7" font-family="Figtree, sans-serif" font-size="30" font-weight="700" text-anchor="middle">6:42</text>
+        <g fill="#f4f4f7" opacity=".7"><rect x="52" y="78" width="6" height="10" rx="1"/><rect x="62" y="74" width="6" height="14" rx="1"/><rect x="72" y="70" width="6" height="18" rx="1"/><rect x="82" y="66" width="6" height="22" rx="1"/></g>
+        <rect x="40" y="140" width="70" height="70" rx="18" fill="#2a8f4a"/>
+        <rect x="40" y="232" width="70" height="70" rx="18" fill="#e5484d"/>
+        <rect x="40" y="324" width="70" height="70" rx="18" fill="url(#cpAccent)"/>
+        <path d="M66 344 L66 374 L92 359 Z" fill="#fff"/>
+        <rect x="40" y="416" width="70" height="70" rx="18" fill="#2f6fd6"/>
+        <circle cx="75" cy="580" r="26" fill="none" stroke="#f4f4f7" stroke-opacity=".5" stroke-width="5"/>
+        <!-- JellyGoose: tabs along the top. -->
+        <g font-family="Figtree, sans-serif" font-weight="700" font-size="26">
+          <rect x="190" y="26" width="150" height="50" rx="25" fill="url(#cpAccent)"/>
+          <text x="265" y="60" fill="#fff" text-anchor="middle">Home</text>
+          <text x="420" y="60" fill="#f4f4f7" fill-opacity=".72" text-anchor="middle">Libraries</text>
+          <text x="580" y="60" fill="#f4f4f7" fill-opacity=".72" text-anchor="middle">Live TV</text>
+          <circle cx="905" cy="51" r="15" fill="none" stroke="#f4f4f7" stroke-opacity=".72" stroke-width="4"/><line x1="916" y1="62" x2="928" y2="74" stroke="#f4f4f7" stroke-opacity=".72" stroke-width="4" stroke-linecap="round"/>
+        </g>
+        <text x="190" y="128" fill="#a873f2" font-family="Figtree, sans-serif" font-size="22" font-weight="800" letter-spacing="2">CONTINUE WATCHING</text>
+        <g font-family="Figtree, sans-serif">
+          <rect x="190" y="148" width="760" height="104" rx="18" fill="#ffffff" fill-opacity=".06"/>
+          <rect x="206" y="162" width="136" height="76" rx="10" fill="url(#cpT1)"/>
+          <text x="364" y="196" fill="#f4f4f7" font-size="28" font-weight="700">The Long Road Home</text>
+          <text x="364" y="228" fill="#f4f4f7" fill-opacity=".62" font-size="22">Resume · 48 min left</text>
+          <rect x="364" y="240" width="300" height="5" rx="2.5" fill="#fff" fill-opacity=".18"/><rect x="364" y="240" width="170" height="5" rx="2.5" fill="url(#cpAccent)"/>
+          <rect x="190" y="266" width="760" height="104" rx="18" fill="#ffffff" fill-opacity=".04"/>
+          <rect x="206" y="280" width="136" height="76" rx="10" fill="url(#cpT2)"/>
+          <text x="364" y="314" fill="#f4f4f7" font-size="28" font-weight="700">Coastline</text>
+          <text x="364" y="346" fill="#f4f4f7" fill-opacity=".62" font-size="22">S2 · E4 The Causeway</text>
+          <rect x="190" y="384" width="760" height="104" rx="18" fill="#ffffff" fill-opacity=".04"/>
+          <rect x="206" y="398" width="136" height="76" rx="10" fill="url(#cpT3)"/>
+          <text x="364" y="432" fill="#f4f4f7" font-size="28" font-weight="700">The Glass Orchard</text>
+          <text x="364" y="464" fill="#f4f4f7" fill-opacity=".62" font-size="22">Resume · 1 h 12 min left</text>
+          <rect x="190" y="502" width="760" height="104" rx="18" fill="#ffffff" fill-opacity=".04"/>
+          <rect x="206" y="516" width="136" height="76" rx="10" fill="url(#cpT4)"/>
+          <text x="364" y="550" fill="#f4f4f7" font-size="28" font-weight="700">Night Lights</text>
+          <text x="364" y="582" fill="#f4f4f7" fill-opacity=".62" font-size="22">Next up · S1 · E7</text>
+          <g stroke="#f4f4f7" stroke-opacity=".35" stroke-width="4" fill="none" stroke-linecap="round"><path d="M920 190 l12 12 l-12 12"/><path d="M920 308 l12 12 l-12 12"/><path d="M920 426 l12 12 l-12 12"/><path d="M920 544 l12 12 l-12 12"/></g>
+        </g>
+        <!-- Now playing: a live channel, as sound, on the road. -->
+        <circle cx="1270" cy="300" r="300" fill="url(#cpGlow)"/>
+        <g font-family="Figtree, sans-serif">
+          <rect x="1010" y="110" width="520" height="500" rx="28" fill="#ffffff" fill-opacity=".06" stroke="#ffffff" stroke-opacity=".1"/>
+          <rect x="1050" y="150" width="440" height="200" rx="18" fill="#1c2559"/>
+          <text x="1270" y="238" fill="#fff" font-size="40" font-weight="900" text-anchor="middle">METRO</text>
+          <text x="1270" y="282" fill="#8fd3ff" font-size="26" font-weight="700" text-anchor="middle" letter-spacing="6">TWO HD</text>
+          <rect x="1068" y="166" width="84" height="32" rx="16" fill="#e5484d"/><text x="1110" y="189" fill="#fff" font-size="18" font-weight="800" text-anchor="middle">LIVE</text>
+          <text x="1270" y="404" fill="#f4f4f7" font-size="32" font-weight="800" text-anchor="middle">Metro Tonight</text>
+          <text x="1270" y="440" fill="#f4f4f7" fill-opacity=".62" font-size="22" text-anchor="middle">4.1 Metro Two HD · until 7:00</text>
+          <g fill="url(#cpAccent)"><rect x="1236" y="462" width="6" height="22" rx="3"/><rect x="1248" y="456" width="6" height="34" rx="3"/><rect x="1260" y="466" width="6" height="14" rx="3"/><rect x="1272" y="458" width="6" height="30" rx="3"/><rect x="1284" y="464" width="6" height="18" rx="3"/><rect x="1296" y="460" width="6" height="26" rx="3"/></g>
+          <g fill="#f4f4f7"><path d="M1082 548 l30 -18 v36 z M1110 548 l30 -18 v36 z"/><rect x="1252" y="528" width="12" height="40" rx="3"/><rect x="1276" y="528" width="12" height="40" rx="3"/><path d="M1458 548 l-30 -18 v36 z M1430 548 l-30 -18 v36 z"/></g>
+        </g>
+      </svg>
+      <figcaption>An illustration, not a screenshot.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="iphone" class="features">
+  <h2 class="section-title">On iPhone and iPad</h2>
+  <div class="feature reverse">
+    <div class="feature-copy">
+      <span class="eyebrow">iPhone &amp; iPad</span>
+      <h3>Everything from the Apple&nbsp;TV, in your hand</h3>
+      <p>
+        The same JellyGoose on your iPhone and iPad: Home, your libraries, the player
+        that plays what the system player won't, Live TV you can pause, and Requests.
+        One unlock covers all of them.
+      </p>
+      <ul class="carplay-points">
+        <li><strong>Downloads.</strong> A film, an episode or a whole season, to watch with no server in reach. Your place goes back to the server when you're home.</li>
+        <li><strong>Picture in Picture.</strong> Shrink a film to a corner and keep browsing, in JellyGoose or out of it.</li>
+        <li><strong>Play on TV.</strong> Send a film to the Apple&nbsp;TV and use your phone as the remote.</li>
+        <li><strong>Watch Together.</strong> Join a group from the sofa or the other side of town.</li>
+      </ul>
+    </div>
+    <figure class="phones">
+      <img src="/img/iphone-home.jpg" width="600" height="1304" loading="lazy" alt="JellyGoose on an iPhone: Home, with the show you're part-way through at the top and Continue Watching beneath it.">
+      <img src="/img/iphone-livetv.jpg" width="600" height="1304" loading="lazy" alt="Live TV on an iPhone: the channel that's on playing above the guide, with what's on each channel by the half-hour.">
+    </figure>
+  </div>
+</section>
+
+<section id="features" class="features">
+  <h2 class="section-title">Built for the way you actually watch</h2>
+
+  <div class="feature">
+    <div class="feature-copy">
+      <span class="eyebrow">Home</span>
+      <h3>A Home that shows you what's there</h3>
+      <p>
+        Whatever you highlight fills the top of the screen with its artwork, logo,
+        tagline and details. Continue Watching, Next Up and the newest in each
+        library glide into place beneath it, a press at a time.
+      </p>
+      <p>
+        Back takes you to the top row, then to the menu, which opens over the
+        page: your libraries, pinned views and search are a press away, with
+        whoever's watching at the top.
+      </p>
+    </div>
+    <figure><img src="/img/home-menu.jpg" width="1600" height="900" loading="lazy" alt="Home with the menu open over it: who's watching at the top, then Search, Home, a row for each library, Live TV, Requests and Settings, with the highlighted show and the Continue Watching row dimmed behind."></figure>
+  </div>
+
+  <div class="feature reverse">
+    <div class="feature-copy">
+      <span class="eyebrow">Playback</span>
+      <h3>Your files, played as they are</h3>
+      <p>
+        MKV remuxes are read from the original file on the Apple&nbsp;TV itself,
+        instead of waiting for your server to repackage them. A 4K film starts at
+        once and keeps its Dolby Vision, HDR and Atmos, and TrueHD and DTS
+        soundtracks arrive in full, lossless 7.1.
+      </p>
+      <p>
+        H.264 and HEVC stay with Apple's player, where HDR and frame-rate matching
+        belong. AV1, VP9, MPEG-2 and the rest are handed to a built-in VLC engine,
+        so your server doesn't have to re-encode anything.
+      </p>
+    </div>
+    <figure><img src="/img/player.jpg" width="1600" height="900" loading="lazy" alt="A film playing with the controls up: subtitles, a TrueHD Atmos 7.1 audio track, Audio Sync, speed, chapters and Stats above a progress bar with chapter marks, the time it will end and the time remaining."></figure>
+  </div>
+
+  <div class="feature">
+    <div class="feature-copy">
+      <span class="eyebrow">Live TV</span>
+      <h3>Live TV from your own tuner</h3>
+      <p>
+        Give your Jellyfin server a tuner, an HDHomeRun for one, and JellyGoose
+        adds Live TV: a guide to what's on and what's next, with the channel you
+        were watching still playing in the corner while you look around. Keep to
+        your favourites, or to the news, sport, films or children's programmes.
+      </p>
+      <p>
+        What's on now gets a row on Home as well. Record one showing or every
+        episode of a series, see what's set to record, and find the recordings
+        in a library of their own.
+      </p>
+    </div>
+    <figure><img src="/img/livetv.jpg" width="1600" height="900" loading="lazy" alt="The Live TV guide: 108 channels, a row each, with programmes and their episodes laid out by the half-hour, the highlighted programme described at the top and a channel playing in the corner."></figure>
+  </div>
+
+  <div class="feature reverse">
+    <div class="feature-copy">
+      <span class="eyebrow">Pause and rewind</span>
+      <h3>Pause a channel, or go back through it</h3>
+      <p>
+        The Apple&nbsp;TV keeps up to half an hour of the channel you're watching,
+        so live TV handles like a film. Pause it. Press left to hear a line
+        again, or hold it to run back further. Press right to catch up, all the
+        way to live. A bar shows where you are and how far behind.
+      </p>
+      <p>
+        Press down for a card about what's on and what follows it, and up for
+        the channel's captions.
+      </p>
+    </div>
+    <figure><img src="/img/livetv-rewind.jpg" width="1600" height="708" loading="lazy" alt="A film on a live channel, thirty seconds behind: a bar along the bottom shows the time on screen, how much of the channel is kept, and −0:30."></figure>
+  </div>
+
+  <div class="feature">
+    <div class="feature-copy">
+      <span class="eyebrow">Multiview</span>
+      <h3>Four channels at once</h3>
+      <p>
+        Put two channels side by side, or four in a square that fills the
+        screen, and hear whichever one is highlighted. Move the highlight and
+        the sound follows it. Select swaps a channel, adds another or takes one
+        off; Play goes full screen on it.
+      </p>
+      <p>
+        Each picture is a channel of its own, so the game, the news and
+        whatever else is on can all run while you wait for the moment that
+        matters.
+      </p>
+    </div>
+    <figure><img src="/img/multiview.jpg" width="1600" height="900" loading="lazy" alt="Multiview: four channels in a square filling the screen, each named in its corner, the top-left one highlighted with a speaker mark showing its sound is the one playing."></figure>
+  </div>
+
+  <div class="feature reverse">
+    <div class="feature-copy">
+      <span class="eyebrow">Detail pages</span>
+      <h3>What a file actually is, at a glance</h3>
+      <p>
+        Every film and episode shows its resolution, HDR format, codecs, audio
+        layout, container and bitrate, read from the file itself, beside the
+        critics' score, the director and the studios behind it.
+      </p>
+    </div>
+    <figure><img src="/img/detail.jpg" width="1600" height="900" loading="lazy" alt="A film's page: its backdrop and logo, a Play button, and badges for 4K, Dolby Vision, HEVC 10-bit, TrueHD 7.1 Atmos, MKV and 65 Mbps above the cast."></figure>
+  </div>
+
+  <div class="feature">
+    <div class="feature-copy">
+      <span class="eyebrow">Libraries</span>
+      <h3>Libraries that keep up</h3>
+      <p>
+        Move through thousands of titles a row at a time, or jump to any letter
+        from the A to Z down the side. Sort by title, date added, release date,
+        date played, rating, critics' score or running time, either way round, or
+        pull out a random handful.
+      </p>
+      <p>
+        Choose several genres or decades at once, show only what you haven't
+        watched, and each library remembers how you left it. Pin any view to the
+        menu: unwatched comedies from the nineties, or every episode added
+        recently across all your shows.
+      </p>
+    </div>
+    <figure><img src="/img/library.jpg" width="1600" height="900" loading="lazy" alt="A library of 2,177 films as a grid of posters, with Sort, Genre, Year, Unwatched and Favourites above it and the alphabet down the side, on B."></figure>
+  </div>
+
+  <div class="feature reverse">
+    <div class="feature-copy">
+      <span class="eyebrow">Requests</span>
+      <h3>Ask for what isn't there</h3>
+      <p>
+        Run Seerr beside your server and JellyGoose finds it and adds a Requests
+        section: what's trending, popular and coming soon, by genre, studio and
+        network. Search for anything, and ask for a film, a show or just one
+        season from the sofa.
+      </p>
+      <p>
+        Connect once and you're in as whoever's watching, with nothing to type.
+      </p>
+    </div>
+    <figure><img src="/img/requests.jpg" width="1600" height="900" loading="lazy" alt="The Requests section: rows of trending and popular films and series as posters, ticked where they're already in the library, with Your Requests and Search at the top."></figure>
+  </div>
+
+  <div class="feature">
+    <div class="feature-copy">
+      <span class="eyebrow">Cast, crew &amp; studios</span>
+      <h3>Follow a face, or a studio, through your library</h3>
+      <p>
+        Choose anyone in the cast for a short biography and everything else
+        they're in that you actually own. The studio or network beside a title's
+        details works the same way: pick one and there's everything else of theirs.
+      </p>
+    </div>
+    <figure><img src="/img/person.jpg" width="1600" height="900" loading="lazy" alt="A film's Cast and Crew row of faces with their roles, above a More Like This row of posters."></figure>
+  </div>
+
+  <div class="feature reverse">
+    <div class="feature-copy">
+      <span class="eyebrow">Shortcuts</span>
+      <h3>Hold a poster, skip the page</h3>
+      <p>
+        Long-press any poster to play it, mark it watched, make it a favourite,
+        add it to your watchlist or clear it from Continue Watching, without
+        opening its page. Mark a whole season watched in one go.
+      </p>
+    </div>
+    <figure><img src="/img/longpress.jpg" width="1600" height="900" loading="lazy" alt="A menu over Home for one film, offering Play, Mark as Watched, Add to Favourites and Add to Watchlist."></figure>
+  </div>
+</section>
+
+<section id="themes" class="themes">
+  <h2 class="section-title">Six colour schemes, six icons</h2>
+  <p class="section-lede">
+    Pick a scheme in Settings and the whole app repaints: menu, buttons, shelf
+    headings and the wallpaper behind it all. Pick an icon and the Apple&nbsp;TV
+    Home screen changes with it.
+  </p>
+  <div class="theme-grid">
+    <figure><img src="/img/theme-violet.jpg" width="1100" height="618" loading="lazy" alt="A library in the Violet Signal scheme."><figcaption>Violet Signal</figcaption></figure>
+    <figure><img src="/img/theme-ember.jpg" width="1100" height="618" loading="lazy" alt="A library in the Ember scheme."><figcaption>Ember</figcaption></figure>
+    <figure><img src="/img/theme-evergreen.jpg" width="1100" height="618" loading="lazy" alt="A library in the Evergreen scheme."><figcaption>Evergreen</figcaption></figure>
+    <figure><img src="/img/theme-blue.jpg" width="1100" height="618" loading="lazy" alt="A library in the Blue Hour scheme."><figcaption>Blue Hour</figcaption></figure>
+    <figure><img src="/img/theme-rose.jpg" width="1100" height="618" loading="lazy" alt="A library in the Rose Noir scheme."><figcaption>Rose Noir</figcaption></figure>
+    <figure><img src="/img/theme-black.jpg" width="1100" height="618" loading="lazy" alt="A library in the True Black scheme."><figcaption>True Black</figcaption></figure>
+    <figure><img src="/img/appearance.jpg" width="1100" height="618" loading="lazy" alt="The Appearance page in Settings: the six schemes beside six app icons."><figcaption>Six app icons</figcaption></figure>
+  </div>
+</section>
+
+<section class="specs">
+  <h2 class="section-title">The details</h2>
+  <div class="spec-grid">
+    <div><h4>Direct play first</h4><p>Files the Apple TV understands are played untouched. MKV is read on the Apple TV itself and everything else goes to VLC, before anyone re-encodes anything.</p></div>
+    <div><h4>Quick to start</h4><p>A film is made ready while you read its page, so Play goes straight to playing, and scrubbing previews are fetched as it plays.</p></div>
+    <div><h4>Matches your TV</h4><p>Sets the frame rate and dynamic range to the video's own before playback starts.</p></div>
+    <div><h4>Finds your server</h4><p>Setup looks for Jellyfin servers on your network, so you pick yours instead of typing an address with the remote.</p></div>
+    <div><h4>Who's watching</h4><p>Everyone signed in on the Apple TV gets a face on the sign-in screen. Pick yours and you're in, with your own history and favourites.</p></div>
+    <div><h4>Subtitles that keep time</h4><p>Text subtitles are drawn on the film's own clock, and Blu-ray and DVD picture subtitles straight from the file. Choose their size, colour, background and height, or nudge one timed to a different cut.</p></div>
+    <div><h4>Subtitles when there are none</h4><p>Search the internet from the player. Your server fetches the one you pick, and it appears without the film restarting.</p></div>
+    <div><h4>Skip what you've seen</h4><p>Skip intros and credits, or have them skipped for you. Jump between chapters, preview frames while you scrub, and see the next episode coming as the credits roll.</p></div>
+    <div><h4>Sound in step</h4><p>When a film's sound runs ahead of its picture or behind it, pull it back into time. The same goes for a live channel, speaker by speaker.</p></div>
+    <div><h4>Watch together</h4><p>Start a group or join one, and everyone watches the same film at the same moment on their own screen. A pause or a skip is everyone's. It's Jellyfin's own SyncPlay, so someone on the web player can join in too.</p></div>
+    <div><h4>A profile for everyone</h4><p>JellyGoose follows whoever is chosen on the Apple&nbsp;TV: their own sign-in, Continue Watching and settings. Someone new picks their face once.</p></div>
+    <div><h4>From the start</h4><p>Tuned in late? A programme your server is recording can be watched from its beginning while it's still on.</p></div>
+    <div><h4>Skip the commercials</h4><p>Where your server has marked the breaks in a recording, they're drawn on the timeline and a press skips each one.</p></div>
+    <div><h4>What's on, in Search</h4><p>Search finds programmes in the TV listings as well as your library, with every time they're showing, to watch or record.</p></div>
+    <div><h4>A sleep timer</h4><p>Stop after a quarter of an hour or up to an hour and a half, or when the film, episode or programme ends.</p></div>
+    <div><h4>Stats when you want them</h4><p>A Stats button shows which player has the film, and whether your server is converting anything and why.</p></div>
+    <div><h4>Speed and shuffle</h4><p>Change the playback speed, shuffle a whole show, or play a collection or playlist straight through.</p></div>
+    <div><h4>Home, your way</h4><p>Put Home's rows in the order you choose, and switch off the ones you never use.</p></div>
+    <div><h4>A watchlist</h4><p>Keep a list of the films you mean to get to. One comes off it by itself once you've watched it.</p></div>
+    <div><h4>Search that finds people</h4><p>Films, shows and collections by name, and the people in them: choose an actor and there's everything of theirs you own.</p></div>
+    <div><h4>Resume everywhere</h4><p>Progress is reported to Jellyfin as you watch, so Continue Watching stays in step with every other client.</p></div>
+    <div><h4>On the Top Shelf</h4><p>Continue Watching and Next Up sit above JellyGoose on the Apple TV Home screen, one click from playing.</p></div>
+    <div><h4>Quick Connect</h4><p>Sign in with a code from another device instead of typing a password with the remote.</p></div>
+    <div><h4>Run the server from the sofa</h4><p>Add, rename and remove libraries, add folders, scan for changes or refresh metadata, and watch the progress on screen.</p></div>
+    <div><h4>In your language</h4><p>English, Spanish, French, German, Italian, Portuguese, Dutch, Japanese and Chinese.</p></div>
+    <div><h4>Nothing phones home</h4><p>The app talks to your server and nowhere else, beyond asking your own network where that server is. No accounts, no analytics, no third parties.</p></div>
+    <div><h4>Try it, then pay once</h4><p>Everything works free for 7 days. After that, playing needs a one-time unlock that covers the Apple&nbsp;TV, iPhone and iPad; browsing your server stays free. No subscription, no ads, nothing more to buy. Had JellyGoose before 1.7.1? It's already unlocked.</p></div>
+  </div>
+</section>
+
+<section id="get" class="coming">
+  <h2 class="section-title">Get JellyGoose</h2>
+  <p class="section-lede">
+    JellyGoose is <a href="https://apps.apple.com/app/jellygoose/id6814667375">on the App Store</a>, free to download and to try for 7 days. Then a one-time unlock, $4.99 for its first two weeks and $6.99 after, covers the Apple&nbsp;TV, iPhone and iPad. If you had JellyGoose before 1.7.1, it's already unlocked. Here's what you'll need.
+  </p>
+  <ol class="steps">
+    <li><span class="step-n">1</span><div><h4>An Apple TV, iPhone or iPad</h4><p>An Apple&nbsp;TV on tvOS 18 or later (on an Apple&nbsp;TV 4K you also get HDR, Dolby Vision and frame-rate matching), or an iPhone or iPad on iOS 18 or later. CarPlay comes with the iPhone.</p></div></li>
+    <li><span class="step-n">2</span><div><h4>Your own Jellyfin server</h4><p>Any recent Jellyfin, on your network or reachable over the internet. There's no JellyGoose account and no service in the middle. Live TV wants a tuner set up in Jellyfin, and Requests wants Seerr running beside it; without them, those sections stay out of the way.</p></div></li>
+    <li><span class="step-n">3</span><div><h4>Sign in once</h4><p>Pick your server from the ones JellyGoose finds on your network, or type its address, then sign in with your password or a Quick Connect code from your phone. After that, it's one press on your face.</p></div></li>
+  </ol>
+</section>
+
+<section id="support" class="coming">
+  <h2 class="section-title">Support</h2>
+  <p class="section-lede">
+    Something not working, or something you'd like JellyGoose to do? Email
+    <a href="mailto:hello@goosehouse.org">hello@goosehouse.org</a>. It helps to say which
+    Apple TV, iPhone or iPad, the version of JellyGoose (Settings, About) and the version of your Jellyfin server.
+  </p>
+</section>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <span class="wordmark small"><span class="jelly">Jelly</span><span class="goose">Goose</span></span>
+    <p>
+      An independent client for <a href="https://jellyfin.org">Jellyfin</a> on Apple&nbsp;TV, iPhone and iPad.
+      Not affiliated with or endorsed by the Jellyfin project. Apple TV, iPhone, iPad, CarPlay,
+      tvOS and the App Store are trademarks of Apple Inc.
+    </p>
+    <p class="links"><a href="#support">Support</a> · <a href="/privacy">Privacy</a></p>
+  </div>
+</footer>
+
+</body>
+</html>

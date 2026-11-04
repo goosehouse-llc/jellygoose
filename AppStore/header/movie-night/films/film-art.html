@@ -1,0 +1,155 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Made-up film art</title>
+<!--
+  Artwork for made-up films on a test server, for App Store pictures with no one's
+  real films in them. ?film=lantern|planets|glass|canyon|city&w=1920&h=1080
+  (a backdrop) or &poster=1&w=500&h=750 (a poster: a 2:3 crop round the film's
+  focus, with its title).
+-->
+<style>
+  @font-face { font-family: Figtree; font-weight: 900; src: url("../../../../GooseTV/Resources/Fonts/Figtree-Black.ttf"); }
+  @font-face { font-family: Figtree; font-weight: 600; src: url("../../../../GooseTV/Resources/Fonts/Figtree-SemiBold.ttf"); }
+  html, body { margin: 0; padding: 0; background: #000; overflow: hidden; }
+  #art { position: relative; overflow: hidden; }
+  svg { display: block; }
+  .poster-title { position: absolute; left: 0; right: 0; text-align: center; font-family: Figtree; color: #fff;
+                  text-shadow: 0 4px 24px rgba(0,0,0,.55); }
+  .poster-title .t { font-weight: 900; letter-spacing: .04em; text-transform: uppercase; line-height: .95; }
+  .poster-title .s { font-weight: 600; letter-spacing: .32em; text-transform: uppercase; opacity: .85; margin-top: .9em; }
+</style>
+</head>
+<body>
+<div id="art"></div>
+<script>
+const q = new URLSearchParams(location.search);
+const film = q.get("film") || "lantern", W = +(q.get("w") || 1920), H = +(q.get("h") || 1080), poster = q.get("poster") === "1";
+// A repeatable scatter: the same film draws the same way every time.
+let seed = [...film].reduce((a, c) => a * 31 + c.charCodeAt(0), 7) >>> 0;
+const rnd = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
+const S = [];   // SVG pieces
+const defs = [];
+const grad = (id, stops, x2 = 0, y2 = 1) => defs.push(`<linearGradient id="${id}" x1="0" y1="0" x2="${x2}" y2="${y2}">${stops.map(([o, c, a = 1]) => `<stop offset="${o}" stop-color="${c}" stop-opacity="${a}"/>`).join("")}</linearGradient>`);
+const radial = (id, stops) => defs.push(`<radialGradient id="${id}" cx=".5" cy=".5" r=".5">${stops.map(([o, c, a = 1]) => `<stop offset="${o}" stop-color="${c}" stop-opacity="${a}"/>`).join("")}</radialGradient>`);
+const blur = (id, sd) => defs.push(`<filter id="${id}" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="${sd}"/></filter>`);
+const stars = (n, y0, y1, x0 = 0, x1 = 1920) => { for (let i = 0; i < n; i++) S.push(`<circle cx="${x0 + rnd() * (x1 - x0)}" cy="${y0 + rnd() * (y1 - y0)}" r="${0.6 + rnd() * 1.6}" fill="#fff" opacity="${0.25 + rnd() * 0.65}"/>`); };
+const ridge = (y, amp, step, fill, seedShift = 0, extra = "") => {
+  let d = `M0 1080 L0 ${y}`;
+  for (let x = 0; x <= 1920 + step; x += step) d += ` Q ${x + step / 2} ${y - amp * (0.4 + rnd())} ${x + step} ${y + amp * (rnd() - 0.5) * 0.6}`;
+  S.push(`<path d="${d} L1920 1080 Z" fill="${fill}" ${extra}/>`);
+};
+let focus = 1300, title = "", sub = "";
+
+if (film === "lantern") {
+  title = "Lantern Bay"; sub = "A mystery"; focus = 1330;
+  grad("sky", [[0, "#070b24"], [.42, "#18204f"], [.62, "#3a2f68"], [.74, "#6d3f6b"], [.8, "#a8566a"]]);
+  grad("sea", [[0, "#2a2558"], [.25, "#141a43"], [1, "#05081a"]]);
+  radial("moonGlow", [[0, "#ffe9b8", .55], [1, "#ffe9b8", 0]]);
+  radial("lampGlow", [[0, "#ffd27a", .9], [1, "#ffb35c", 0]]);
+  grad("lantern", [[0, "#fff6d6"], [.6, "#ffc164"], [1, "#ff8a3d"]]);
+  radial("lanternGlow", [[0, "#ffb35c", .55], [1, "#ff8a3d", 0]]);
+  grad("beam", [[0, "#ffe4a0", 0], [1, "#ffe4a0", .30]], 1, 0);
+  blur("beamBlur", 10);
+  blur("soft", 6);
+  S.push(`<rect width="1920" height="1080" fill="url(#sky)"/>`);
+  stars(170, 0, 560, 500, 1920);
+  S.push(`<circle cx="1470" cy="215" r="260" fill="url(#moonGlow)"/><circle cx="1470" cy="215" r="62" fill="#fff4d6"/>`);
+  // The lighthouse's beam across the sky, from its lamp leftwards.
+  S.push(`<polygon points="1660,404 980,330 990,440 1660,418" fill="url(#beam)" filter="url(#beamBlur)"/>`);
+  ridge(650, 50, 160, "#221f50");
+  ridge(690, 30, 120, "#171a40");
+  // Headland and lighthouse.
+  S.push(`<path d="M1460 700 C 1500 640, 1560 600, 1620 596 L 1760 590 C 1820 600, 1880 640, 1920 650 L1920 720 L1460 720 Z" fill="#0b0f2c"/>`);
+  S.push(`<path d="M1636 596 L1646 430 L1674 430 L1684 596 Z" fill="#e9e3f2"/>`);
+  for (const y of [470, 520, 570]) S.push(`<path d="M${1646 - (y - 430) * 0.06} ${y} L${1674 + (y - 430) * 0.06} ${y} L${1674 + (y + 18 - 430) * 0.06} ${y + 18} L${1646 - (y + 18 - 430) * 0.06} ${y + 18} Z" fill="#b23a48"/>`);
+  S.push(`<rect x="1640" y="422" width="40" height="8" rx="2" fill="#2a2440"/><circle cx="1660" cy="408" r="60" fill="url(#lampGlow)"/><rect x="1648" y="394" width="24" height="28" rx="4" fill="#ffe7a8"/><path d="M1644 394 L1660 378 L1676 394 Z" fill="#2a2440"/>`);
+  S.push(`<rect y="700" width="1920" height="380" fill="url(#sea)"/>`);
+  for (let i = 0; i < 26; i++) { const y = 712 + i * i * 0.55 + rnd() * 6, w = 30 + rnd() * 70 + i * 4; S.push(`<rect x="${1470 - w / 2 + (rnd() - .5) * 30}" y="${y}" width="${w}" height="${2 + i * 0.12}" rx="2" fill="#ffe9b8" opacity="${0.5 - i * 0.015}"/>`); }
+  for (let i = 0; i < 40; i++) S.push(`<rect x="${rnd() * 1920}" y="${720 + rnd() * 360}" width="${40 + rnd() * 160}" height="1.6" fill="#8fa2ff" opacity="${0.05 + rnd() * 0.12}"/>`);
+  // Lanterns rising from the bay: smaller and fainter the further away.
+  const lanterns = [];
+  for (let i = 0; i < 70; i++) {
+    const depth = rnd();                                   // 0 far, 1 near
+    const x = 640 + rnd() * 1300, y = 140 + (1 - depth) * 520 + rnd() * 380 * depth;
+    lanterns.push([depth, x, Math.min(y, 1010)]);
+  }
+  lanterns.sort((a, b) => a[0] - b[0]);
+  for (const [d, x, y] of lanterns) {
+    const s = 6 + d * d * 34;
+    S.push(`<circle cx="${x}" cy="${y}" r="${s * 3.2}" fill="url(#lanternGlow)" opacity="${0.35 + d * 0.5}"/>`);
+    S.push(`<rect x="${x - s / 2}" y="${y - s * 0.65}" width="${s}" height="${s * 1.3}" rx="${s * 0.28}" fill="url(#lantern)" opacity="${0.55 + d * 0.45}"/>`);
+    if (y > 720) S.push(`<rect x="${x - s * 0.3}" y="${y + s}" width="${s * 0.6}" height="${s * 2.4}" rx="${s * 0.3}" fill="#ffc164" opacity="${0.12 + d * 0.15}" filter="url(#soft)"/>`);
+  }
+  // A small boat, someone in it setting one more lantern off.
+  S.push(`<path d="M1060 902 L1250 902 L1226 934 L1086 934 Z" fill="#05081a"/><rect x="1150" y="852" width="14" height="50" rx="6" fill="#05081a"/><circle cx="1157" cy="842" r="12" fill="#05081a"/>`);
+  S.push(`<circle cx="1186" cy="830" r="44" fill="url(#lanternGlow)"/><rect x="1176" y="816" width="20" height="26" rx="6" fill="url(#lantern)"/>`);
+} else if (film === "planets") {
+  title = "Paper Planets"; sub = "An animated adventure"; focus = 1300;
+  grad("sky", [[0, "#2b2d6e"], [.45, "#6b4fa3"], [.78, "#f29fb3"], [1, "#ffd3a5"]]);
+  grad("planet", [[0, "#ffd99a"], [1, "#f07a62"]], 1, 1);
+  grad("small1", [[0, "#b9f0e2"], [1, "#5fb6c9"]], 1, 1);
+  grad("small2", [[0, "#cdd4ff"], [1, "#8a8ff0"]], 1, 1);
+  defs.push(`<filter id="paper" x="-10%" y="-10%" width="120%" height="140%"><feDropShadow dx="0" dy="-8" stdDeviation="10" flood-color="#3a1f4f" flood-opacity=".35"/></filter>`);
+  S.push(`<rect width="1920" height="1080" fill="url(#sky)"/>`);
+  stars(120, 0, 600);
+  for (let i = 0; i < 14; i++) { const x = rnd() * 1920, y = rnd() * 560, s = 6 + rnd() * 10; S.push(`<path d="M${x} ${y - s} L${x + s * .25} ${y - s * .25} L${x + s} ${y} L${x + s * .25} ${y + s * .25} L${x} ${y + s} L${x - s * .25} ${y + s * .25} L${x - s} ${y} L${x - s * .25} ${y - s * .25} Z" fill="#fff6d8" opacity=".9"/>`); }
+  S.push(`<g transform="rotate(-14 1360 400)"><ellipse cx="1360" cy="400" rx="330" ry="62" fill="none" stroke="#fff0cf" stroke-width="16" opacity=".85"/></g>`);
+  S.push(`<circle cx="1360" cy="400" r="200" fill="url(#planet)"/><path d="M1180 360 Q1360 330 1545 380" stroke="#ffe7b8" stroke-width="18" fill="none" opacity=".35"/><path d="M1200 460 Q1360 440 1530 470" stroke="#d4584e" stroke-width="14" fill="none" opacity=".35"/>`);
+  S.push(`<g transform="rotate(-14 1360 400)"><path d="M1030 400 A330 62 0 0 0 1690 400" fill="none" stroke="#fff0cf" stroke-width="16" opacity=".85"/></g>`);
+  S.push(`<circle cx="930" cy="230" r="58" fill="url(#small1)"/><circle cx="1745" cy="745" r="38" fill="url(#small2)"/><circle cx="700" cy="520" r="22" fill="#ffd3a5"/>`);
+  for (const [y, c] of [[760, "#f7c1c9"], [840, "#e89bb5"], [930, "#c97aa6"], [1010, "#9c5f97"]]) ridge(y, 60, 180, c, 0, `filter="url(#paper)"`);
+} else if (film === "glass") {
+  title = "Glasswater"; sub = "A thriller"; focus = 1280;
+  grad("sky", [[0, "#0d2329"], [.5, "#2f5f66"], [1, "#9cc2bb"]]);
+  grad("lake", [[0, "#3c6e72"], [.3, "#1c4248"], [1, "#05161a"]]);
+  blur("mist", 30);
+  S.push(`<rect width="1920" height="600" fill="url(#sky)"/>`);
+  S.push(`<circle cx="1420" cy="250" r="40" fill="#e9f4ef" opacity=".55"/>`);
+  const trees = (base, h, color, n, flip) => { let d = ""; for (let i = 0; i < n; i++) { const x = (i / n) * 1980 - 30 + rnd() * 20, t = h * (0.6 + rnd() * 0.6), w = 18 + rnd() * 16; d += flip ? `M${x - w} ${base} L${x} ${base + t} L${x + w} ${base} Z ` : `M${x - w} ${base} L${x} ${base - t} L${x + w} ${base} Z `; } return `<path d="${d}" fill="${color}"/>`; };
+  S.push(trees(600, 150, "#2a4f53", 70, false), trees(604, 210, "#163236", 55, false));
+  S.push(`<rect y="600" width="1920" height="480" fill="url(#lake)"/>`);
+  S.push(`<g opacity=".35">${trees(600, 150, "#2a4f53", 70, true)}${trees(596, 210, "#163236", 55, true)}</g>`);
+  for (let i = 0; i < 4; i++) S.push(`<ellipse cx="${300 + i * 480}" cy="${560 + rnd() * 60}" rx="520" ry="46" fill="#e7f2ee" opacity=".16" filter="url(#mist)"/>`);
+  S.push(`<path d="M1230 760 L1400 760 L1380 786 L1252 786 Z" fill="#06171a"/>`);
+  for (let i = 1; i < 6; i++) S.push(`<ellipse cx="1316" cy="790" rx="${90 * i}" ry="${12 * i}" fill="none" stroke="#9cc2bb" stroke-width="1.6" opacity="${0.35 - i * 0.05}"/>`);
+} else if (film === "canyon") {
+  title = "Red Canyon Run"; sub = "An adventure"; focus = 1300;
+  grad("sky", [[0, "#2a1a4a"], [.45, "#c4506a"], [.75, "#f7a35c"], [1, "#ffd98a"]]);
+  radial("sun", [[0, "#fff4d0"], [.5, "#ffe0a0", .9], [1, "#ffcf80", 0]]);
+  S.push(`<rect width="1920" height="1080" fill="url(#sky)"/><circle cx="1320" cy="560" r="230" fill="url(#sun)"/>`);
+  const mesas = (base, h, color) => { let d = `M0 1080 L0 ${base}`; let x = 0; while (x < 1920) { const w = 120 + rnd() * 260, top = base - h * (0.3 + rnd() * 0.7), r = 40 + rnd() * 40; d += ` L${x + r} ${top} L${x + w - r} ${top} L${x + w} ${base}`; x += w + rnd() * 120; d += ` L${x} ${base}`; } S.push(`<path d="${d} L1920 1080 Z" fill="${color}"/>`); };
+  mesas(640, 200, "#c25363"); mesas(720, 220, "#8e2f4a"); mesas(820, 240, "#5a1c3a"); mesas(940, 200, "#2c0f22");
+  S.push(`<path d="M1340 640 C 1300 760, 1100 820, 1040 920 S 900 1080, 860 1080 L 1080 1080 C 1120 1020, 1220 900, 1300 830 S 1360 700, 1350 640 Z" fill="#3b1a2c"/>`);
+  S.push(`<path d="M1345 650 C 1320 760, 1180 850, 1110 940 S 990 1060, 970 1080" fill="none" stroke="#ffd27a" stroke-width="4" stroke-dasharray="18 22" opacity=".8"/>`);
+} else if (film === "city") {
+  title = "City of Small Hours"; sub = "A drama"; focus = 1240;
+  grad("sky", [[0, "#0a0f2a"], [.45, "#2b1f5c"], [.75, "#7a3a7a"], [.9, "#c25b7a"]]);
+  grad("river", [[0, "#3a2350"], [1, "#07081a"]]);
+  S.push(`<rect width="1920" height="1080" fill="url(#sky)"/>`);
+  stars(90, 0, 420);
+  S.push(`<circle cx="1560" cy="200" r="36" fill="#ffe7c4"/>`);
+  let x = -20;
+  while (x < 1940) {
+    const w = 60 + rnd() * 110, h = 180 + rnd() * 470, top = 880 - h;
+    const shade = ["#121433", "#191a40", "#1e1d4a"][Math.floor(rnd() * 3)];
+    S.push(`<rect x="${x}" y="${top}" width="${w}" height="${h}" fill="${shade}"/>`);
+    if (rnd() > .6) S.push(`<rect x="${x + w / 2 - 2}" y="${top - 40}" width="4" height="40" fill="${shade}"/><circle cx="${x + w / 2}" cy="${top - 42}" r="4" fill="#ff6b8a"/>`);
+    for (let wy = top + 16; wy < 860; wy += 26) for (let wx = x + 10; wx < x + w - 14; wx += 20) if (rnd() > .62) S.push(`<rect x="${wx}" y="${wy}" width="9" height="13" fill="${rnd() > .3 ? "#ffd98a" : "#9fc4ff"}" opacity="${0.55 + rnd() * 0.45}"/>`);
+    x += w + 4 + rnd() * 10;
+  }
+  S.push(`<rect y="880" width="1920" height="200" fill="url(#river)"/>`);
+  for (let i = 0; i < 70; i++) S.push(`<rect x="${rnd() * 1920}" y="${890 + rnd() * 180}" width="${8 + rnd() * 50}" height="2" fill="${rnd() > .4 ? "#ffd98a" : "#9fc4ff"}" opacity="${0.15 + rnd() * 0.35}"/>`);
+}
+
+// A poster is a 2:3 piece of the same picture, round its focus, with the title on it.
+const viewBox = poster ? `${focus - 360} 0 720 1080` : "0 0 1920 1080";
+const art = document.getElementById("art");
+art.style.width = W + "px"; art.style.height = H + "px";
+art.innerHTML = `<svg width="${W}" height="${H}" viewBox="${viewBox}" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><defs>${defs.join("")}</defs>${S.join("")}</svg>` +
+  (poster ? `<div class="poster-title" style="bottom:${H * 0.08}px; font-size:${W * 0.105}px"><div class="t">${title}</div><div class="s" style="font-size:${W * 0.03}px">${sub}</div></div>` : "");
+document.body.style.width = W + "px"; document.body.style.height = H + "px";
+</script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy — JellyGoose</title>
+<meta name="description" content="JellyGoose collects nothing. It talks to your own media server and nowhere else.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .policy { max-width: 760px; margin: 0 auto; }
+  .policy h2 { margin-top: 44px; font-size: 1.5rem; }
+  .policy p, .policy li { color: var(--text-dim); }
+  .policy ul { padding-left: 20px; }
+  .policy li { margin-bottom: 8px; }
+  .updated { font-size: 0.9rem; color: var(--text-dim); }
+</style>
+</head>
+<body>
+
+<div class="wallpaper" aria-hidden="true"></div>
+
+<header class="topbar">
+  <a class="brand" href="/">
+    <span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></span>
+    <span class="wordmark"><span class="jelly">Jelly</span><span class="goose">Goose</span></span>
+  </a>
+  <nav><a href="/">Home</a></nav>
+</header>
+
+<main>
+  <section class="policy">
+    <h1>Privacy</h1>
+    <p class="updated">Last updated 22 September 2026</p>
+
+    <p><strong>JellyGoose collects nothing.</strong> There are no accounts, no analytics,
+      no advertising, no tracking, and no third-party services of any kind. The app talks
+      to the media server you point it at and to nowhere else — not even to us. The one
+      exception is described under “Finding your server”, and it never leaves your home
+      network.</p>
+
+    <h2>What stays on your Apple TV</h2>
+    <p>Everything the app remembers is stored on the device itself:</p>
+    <ul>
+      <li>The address of your server, and the name it reports.</li>
+      <li>The servers you have signed in to before, so you can pick one again without
+        typing its address. You can forget any of them from the setup screen.</li>
+      <li>Your sign-in token, kept in the system keychain. It never leaves the device.</li>
+      <li>Your preferences: colour scheme, app icon, streaming quality, player choice,
+        and any filters you pin to the menu.</li>
+    </ul>
+    <p>Deleting the app removes all of it. Signing out deletes the token immediately.</p>
+
+    <h2>Finding your server</h2>
+    <p>While you are setting the app up, it asks your local network whether any Jellyfin
+      servers are on it, so you can choose yours instead of typing its address. The
+      question is a single message sent to devices on your own network; any Jellyfin server
+      that hears it replies with its name and address. Nothing about you or your Apple TV
+      is included, the message never leaves your home network, and the answers are only
+      used to show the list on screen.</p>
+
+    <h2>What your server sees</h2>
+    <p>JellyGoose is a client for Jellyfin and Emby servers, which you or someone you
+      know runs. In normal use it asks your server for your libraries and artwork, streams
+      what you play, and reports your playback position so that Continue Watching works
+      across your devices. That information goes to your server and stays there, under
+      whatever policy that server keeps. We have no access to it.</p>
+
+    <h2>Children</h2>
+    <p>The app collects no personal information from anyone, including children. What it
+      can display is whatever is in your own library.</p>
+
+    <h2>Changes</h2>
+    <p>If this policy ever changes, the new version will appear on this page with a new
+      date above.</p>
+
+    <h2>Contact</h2>
+    <p>Questions about privacy in JellyGoose can go to
+      <a href="mailto:privacy@jellygoose.app">privacy@jellygoose.app</a>.</p>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <span class="wordmark small"><span class="jelly">Jelly</span><span class="goose">Goose</span></span>
+    <p>An independent Apple TV client for <a href="https://jellyfin.org">Jellyfin</a>.
+      Not affiliated with or endorsed by the Jellyfin project. Apple TV, tvOS and the
+      App Store are trademarks of Apple Inc.</p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,65 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "NSLocalNetworkUsageDescription" : {
+      "comment" : "Privacy - Local Network Usage Description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JellyGoose sucht in deinem Netzwerk nach Jellyfin-Servern, damit du deinen auswählen kannst, statt seine Adresse einzutippen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JellyGoose looks for Jellyfin servers on your network, so you can pick yours instead of typing its address."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JellyGoose busca servidores Jellyfin en tu red para que puedas elegir el tuyo en lugar de escribir su dirección."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JellyGoose recherche les serveurs Jellyfin sur votre réseau pour que vous puissiez choisir le vôtre au lieu de saisir son adresse."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JellyGoose cerca i server Jellyfin sulla tua rete, così puoi scegliere il tuo invece di digitarne l'indirizzo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JellyGooseはネットワーク上のJellyfinサーバを探します。アドレスを入力しなくても、自分のサーバを選べます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JellyGoose zoekt naar Jellyfin-servers op je netwerk, zodat je de jouwe kunt kiezen in plaats van het adres te typen."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O JellyGoose procura servidores Jellyfin na sua rede para que você escolha o seu em vez de digitar o endereço."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JellyGoose 会在你的网络中查找 Jellyfin 服务器，这样你可以直接选择，而不必输入地址。"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.1"
+}

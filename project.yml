@@ -1,0 +1,305 @@
+name: GooseTV
+options:
+  bundleIdPrefix: com.goosehouse
+  deploymentTarget:
+    tvOS: "18.0"
+  createIntermediateGroups: true
+  # English is what the code is written in; the string catalog
+  # (GooseTV/Localizable.xcstrings) carries every other language.
+  developmentLanguage: en
+packages:
+  # VideoLAN's VLCKit 3.6 (TVVLCKit on tvOS) as a Swift package. Plays what
+  # AVPlayer can't: AV1, VP9, MPEG-2/4, DTS, TrueHD, PGS/ASS subtitles.
+  VLCKitSPM:
+    url: https://github.com/tylerjonesio/vlckit-spm
+    exactVersion: 3.6.0
+  # AetherEngine: FFmpeg reads the original file on the device and feeds
+  # Apple's own player, so an MKV plays without the server converting it
+  # while Dolby Vision, Atmos and Match Content stay Apple's. LGPL-3.0 with an
+  # App Store exception.
+  AetherEngine:
+    url: https://github.com/superuser404notfound/AetherEngine
+    exactVersion: 7.24.0
+# Debug and Release as XcodeGen makes them, and CarScreen: Release with the
+# iPhone app's car screen switched on, for Sam's own iPhone (the "JellyGoose
+# Car Screen" scheme, Tools/car-screen.sh). Listed after Release so the
+# targets' own schemes still archive with Release.
+configs:
+  Debug: debug
+  Release: release
+  CarScreen: release
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    TVOS_DEPLOYMENT_TARGET: "18.0"
+    # The version people see and the build number App Store Connect counts. Set
+    # here rather than per target because an extension whose version differs from
+    # its app is rejected on upload. Bump CURRENT_PROJECT_VERSION every upload.
+    MARKETING_VERSION: "2.0.1"
+    # What a new Xcode project turns on and XcodeGen doesn't: without these
+    # the compiler doesn't report String(localized:) and friends, and an
+    # export of the string catalog finds almost nothing.
+    SWIFT_EMIT_LOC_STRINGS: YES
+    LOCALIZATION_PREFERS_STRING_CATALOGS: YES
+    LOCALIZED_STRING_SWIFTUI_SUPPORT: YES
+    CURRENT_PROJECT_VERSION: "108"
+targets:
+  GooseTV:
+    type: application
+    # A shared scheme, so builds from the command line don't depend on Xcode
+    # having opened the project and made one.
+    scheme: {}
+    platform: tvOS
+    sources:
+      - GooseTV
+    dependencies:
+      # AetherEngine first: VLCKit exports FFmpeg's names too, an older FFmpeg,
+      # and whichever comes first is the one the engine's calls are bound to.
+      - package: AetherEngine
+      - package: VLCKitSPM
+      # Embedded, so the home screen has something to ask when the app is in
+      # the top row.
+      - target: TopShelf
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.goosehouse.jellygoose
+        CODE_SIGN_ENTITLEMENTS: Signing/GooseTV.entitlements
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: GooseTV/Info.plist
+        ENABLE_PREVIEWS: YES
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 579BSQT6J4
+        ASSETCATALOG_COMPILER_APPICON_NAME: "App Icon & Top Shelf Image"
+        # Alternate icons are listed by hand in Info.plist, in tvOS's form (an
+        # array of image stack names). Don't set ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES:
+        # it writes iOS's dictionary form even for tvOS, which App Store Connect
+        # refuses ("missing the Alternate Icon asset").
+
+  # The iPhone and iPad app: the same code and bundle ID as the Apple TV's, so
+  # the one App Store record carries both (Universal Purchase). What differs
+  # by platform is marked in the code with #if os(tvOS) / os(iOS).
+  JellyGooseiOS:
+    type: application
+    platform: iOS
+    deploymentTarget: "18.0"
+    scheme: {}
+    sources:
+      - path: GooseTV
+        excludes:
+          - Info.plist
+          # The TV's icons and Top Shelf art; iOS/Assets.xcassets has its own
+          # icons and the previews Settings shows.
+          - Assets.xcassets
+      - path: iOS
+        # Named here because the target's INFOPLIST_FILE is a setting
+        # (GOOSETV_INFOPLIST), which XcodeGen can't see through to leave it out.
+        excludes:
+          - Info.plist
+    dependencies:
+      # AetherEngine first: VLCKit exports FFmpeg's names too, an older FFmpeg,
+      # and whichever comes first is the one the engine's calls are bound to.
+      - package: AetherEngine
+      - package: VLCKitSPM
+      # Embedded: the home screen's widgets, and downloads on the Lock Screen.
+      - target: JellyGooseWidgets
+    settings:
+      base:
+        PRODUCT_NAME: JellyGoose
+        PRODUCT_BUNDLE_IDENTIFIER: com.goosehouse.jellygoose
+        # The Apple TV's, less running as each person, which is the TV's alone,
+        # plus CarPlay audio.
+        CODE_SIGN_ENTITLEMENTS: Signing/JellyGooseiOS$(GOOSETV_CAR_SCREEN).entitlements
+        # The same as the device's (CarPlay audio alone).
+        "CODE_SIGN_ENTITLEMENTS[sdk=iphonesimulator*]": Signing/JellyGooseiOS-CarPlay.entitlements
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: $(GOOSETV_INFOPLIST)
+        # The CarScreen configuration (Sam's own iPhone) sets these two:
+        # CarPlay video beside audio (JellyGooseiOS-CarScreen.entitlements),
+        # and an Info.plist made from iOS/Info.plist with the car screen's
+        # scene added (script below). App Review refused that pair (iOS 1.7.1,
+        # Guideline 2.5.1), so Debug and Release keep these as they are.
+        GOOSETV_CAR_SCREEN: ""
+        GOOSETV_INFOPLIST: iOS/Info.plist
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 579BSQT6J4
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        # The alternates, by the same names as the TV's image stacks, so the
+        # app asks for the same name on every platform. Unlike tvOS, iOS gets
+        # the dictionary form this setting writes, which is what it wants.
+        ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES: "Neon PlayBeak MovieNight PlayTile Marquee"
+        ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS: YES
+        # iPhone and iPad.
+        TARGETED_DEVICE_FAMILY: "1,2"
+      configs:
+        CarScreen:
+          GOOSETV_CAR_SCREEN: "-CarScreen"
+          GOOSETV_INFOPLIST: $(DERIVED_FILE_DIR)/CarScreen-Info.plist
+    # Makes the car build's Info.plist: iOS/Info.plist with the scene a car
+    # without CarPlay video opens when the app holds both CarPlay entitlements
+    # (CarScreenSceneDelegate). Every build makes the file, so the build always
+    # finds it; only CarScreen uses it. An archive of the car build stops here,
+    # before anything is compiled.
+    preBuildScripts:
+      - name: Car screen (Sam's own iPhone only)
+        basedOnDependencyAnalysis: false
+        inputFiles:
+          - $(SRCROOT)/iOS/Info.plist
+        outputFiles:
+          - $(DERIVED_FILE_DIR)/CarScreen-Info.plist
+        script: |
+          car="${DERIVED_FILE_DIR}/CarScreen-Info.plist"
+          mkdir -p "${DERIVED_FILE_DIR}"
+          cp "${SRCROOT}/iOS/Info.plist" "$car"
+          if [ -z "${GOOSETV_CAR_SCREEN}" ]; then exit 0; fi
+          if [ "${ACTION}" = "install" ]; then
+            echo "error: The car screen build is for Sam's own iPhone. App Review refused it: archive with the JellyGooseiOS scheme (Release)."
+            exit 1
+          fi
+          key=":UIApplicationSceneManifest:UISceneConfigurations:UIWindowSceneSessionRoleCarPlay"
+          /usr/libexec/PlistBuddy \
+            -c "Add ${key} array" \
+            -c "Add ${key}:0 dict" \
+            -c "Add ${key}:0:UISceneClassName string UIWindowScene" \
+            -c "Add ${key}:0:UISceneConfigurationName string Car Screen" \
+            -c "Add ${key}:0:UISceneDelegateClassName string ${PRODUCT_MODULE_NAME}.CarScreenSceneDelegate" \
+            "$car"
+
+  # What the Apple TV home screen shows above the app when it sits in the top
+  # row. A separate process, so it shares the app's networking code by compiling
+  # the same files rather than by talking to the app, which may not be running.
+  # The Mac: a Mac app of its own (not the iPad app on a Mac), from the same code as
+  # the Apple TV and the iPhone. Where the shared code says "#if os(iOS)" for what a
+  # Mac has too (touchless, but windowed and sized like an iPad), macOS joins it; its
+  # own parts are in macOS/. Same bundle ID, so one purchase covers it as well.
+  JellyGooseMac:
+    type: application
+    platform: macOS
+    deploymentTarget: "15.0"
+    scheme: {}
+    sources:
+      - path: GooseTV
+        excludes:
+          - Info.plist
+          # The TV's icons and Top Shelf art; macOS/Assets.xcassets has the Mac's.
+          - Assets.xcassets
+      # Play on TV: a Mac can send a film to an Apple TV as a phone does.
+      - iOS/PlayOnTV.swift
+      # A finished download's notice, as on a phone.
+      - iOS/DownloadNotices.swift
+      - path: macOS
+        excludes:
+          - Info.plist
+    dependencies:
+      - package: AetherEngine
+      - package: VLCKitSPM
+    settings:
+      base:
+        PRODUCT_NAME: JellyGoose
+        PRODUCT_BUNDLE_IDENTIFIER: com.goosehouse.jellygoose
+        CODE_SIGN_ENTITLEMENTS: Signing/JellyGooseMac.entitlements
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: macOS/Info.plist
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 579BSQT6J4
+        ENABLE_HARDENED_RUNTIME: YES
+        ASSETCATALOG_COMPILER_APPICON_NAME: MacAppIcon
+        COMBINE_HIDPI_IMAGES: YES
+
+  TopShelf:
+    type: app-extension
+    platform: tvOS
+    sources:
+      - TopShelf
+      - GooseTV/Core/DeepLink.swift
+      - GooseTV/Core/DeviceProfile.swift
+      - GooseTV/Core/Keychain.swift
+      - GooseTV/Core/LibraryAdmin.swift
+      # Plugins as the server lists them, which the client's plugin requests answer in.
+      - GooseTV/Core/ServerPlugins.swift
+      # Sessions, tasks and the activity log, which the client's dashboard requests answer in.
+      - GooseTV/Core/ServerDashboard.swift
+      # The channel and programme types the client's Live TV requests answer in.
+      - GooseTV/Core/LiveTV.swift
+      # A recording read as the server makes it: what the client's Live TV
+      # requests answer with for a programme that's being recorded.
+      - GooseTV/Player/LiveRecording.swift
+      - GooseTV/Core/MediaBrowserClient.swift
+      - GooseTV/Core/MediaServer.swift
+      - GooseTV/Core/Models.swift
+      - GooseTV/Core/Preferences.swift
+      # When a recording was made: asked of every title the client's types describe.
+      - GooseTV/Core/Recorded.swift
+      - GooseTV/Core/SharedSession.swift
+      - GooseTV/Core/TokenStore.swift
+      # The app's translations, for the Core text compiled in above and the
+      # shelf's own section titles.
+      - GooseTV/Localizable.xcstrings
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.goosehouse.jellygoose.topshelf
+        PRODUCT_NAME: TopShelf
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: TopShelf/Info.plist
+        CODE_SIGN_ENTITLEMENTS: Signing/TopShelf.entitlements
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 579BSQT6J4
+
+  # The iPhone's and iPad's widgets: Continue Watching and Next Up on the home
+  # screen and the Lock Screen, and downloads as a Live Activity. Like the
+  # Top Shelf, a separate process that compiles the client rather than asking
+  # the app, and reads the session from the keychain the two share. Its own
+  # folder, not iOS/, which every iPhone target (the test harnesses' too)
+  # compiles whole.
+  JellyGooseWidgets:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "18.0"
+    sources:
+      - Widgets
+      # What a Live Activity of downloads says, which the app sends.
+      - iOS/DownloadActivityAttributes.swift
+      - GooseTV/Core/DeepLink.swift
+      - GooseTV/Core/DeviceProfile.swift
+      - GooseTV/Core/Keychain.swift
+      - GooseTV/Core/LibraryAdmin.swift
+      # Plugins as the server lists them, which the client's plugin requests answer in.
+      - GooseTV/Core/ServerPlugins.swift
+      - GooseTV/Core/LiveTV.swift
+      - GooseTV/Player/LiveRecording.swift
+      - GooseTV/Core/MediaBrowserClient.swift
+      - GooseTV/Core/MediaServer.swift
+      - GooseTV/Core/Models.swift
+      - GooseTV/Core/Preferences.swift
+      - GooseTV/Core/Recorded.swift
+      - GooseTV/Core/SharedSession.swift
+      - GooseTV/Core/TokenStore.swift
+      - GooseTV/Localizable.xcstrings
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.goosehouse.jellygoose.widgets
+        PRODUCT_NAME: JellyGooseWidgets
+        # The app's code it compiles leaves out what only the app has (downloads).
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) EXTENSION"
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: Widgets/Info.plist
+        CODE_SIGN_ENTITLEMENTS: Signing/JellyGooseWidgets.entitlements
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 579BSQT6J4
+        TARGETED_DEVICE_FAMILY: "1,2"
+
+schemes:
+  # Sam's own iPhone with the car screen: choose this scheme and the iPhone,
+  # then Run. Never for the App Store (an archive stops with an error); that's
+  # the JellyGooseiOS scheme.
+  JellyGoose Car Screen:
+    build:
+      targets:
+        JellyGooseiOS: all
+    run:
+      config: CarScreen
+    profile:
+      config: CarScreen
+    analyze:
+      config: CarScreen
+    archive:
+      config: CarScreen

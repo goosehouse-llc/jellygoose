@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Movie Night header, play screen</title>
+<!--
+  The App Store header (3840 x 1646, drawn at 2400 x 1029 CSS px at 2x, then scaled to 3840 x 1646):
+  the Movie Night icon itself, made wide: the room, the goose on the couch lit by the screen, and the
+  screen as the icon has it, violet to blue with the white play triangle. Shapes are the icon's
+  (Tools/render-icon.swift, its 400 x 240 units: screen 180 x 100 with corners of 12, the triangle at
+  78-110 across and 32-68 down it), the screen made larger; the whole is 560 x 240 units.
+  (header.html beside it has the Apple TV's Home on the screen instead.)
+-->
+<style>
+  html, body { margin: 0; padding: 0; background: #0d0d14; }
+  svg { display: block; }
+</style>
+</head>
+<body>
+<svg width="2400" height="1029" viewBox="0 0 560 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- The room: the icon's two glows, violet high on the right, blue low on the left. -->
+    <radialGradient id="glowViolet" cx=".7" cy=".25" r=".8" gradientTransform="translate(.7 .25) scale(1 2.333) translate(-.7 -.25)">
+      <stop offset="0" stop-color="#3b2e6e"/><stop offset=".55" stop-color="#1a1438" stop-opacity=".6"/><stop offset="1" stop-color="#0d0d14" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowBlue" cx=".25" cy=".85" r=".7" gradientTransform="translate(.25 .85) scale(1 2.333) translate(-.25 -.85)">
+      <stop offset="0" stop-color="#123a5c"/><stop offset="1" stop-color="#0d0d14" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="violet" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7a45e6"/><stop offset="1" stop-color="#0090db"/>
+    </linearGradient>
+    <linearGradient id="beam" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#9fc4ff" stop-opacity=".28"/><stop offset="1" stop-color="#9fc4ff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="rim" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#c9b0ff"/><stop offset=".6" stop-color="#5b8bff" stop-opacity=".5"/><stop offset="1" stop-color="#5b8bff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="halo" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="28"/></filter>
+  </defs>
+
+  <rect width="560" height="240" fill="#0d0d14"/>
+  <rect width="560" height="240" fill="url(#glowViolet)"/>
+  <rect width="560" height="240" fill="url(#glowBlue)"/>
+
+  <!-- The screen's glow on the wall, as the icon's: its violet, blurred. -->
+  <rect x="216" y="3" width="322" height="189" rx="26" fill="url(#violet)" filter="url(#halo)" opacity=".9"/>
+
+  <!-- The light falling from the screen across the couch to the floor. -->
+  <polygon points="248,179.1 506,179.1 330,240 40,240" fill="url(#beam)"/>
+
+  <!-- The screen: violet to blue, a white veil over it, and the play triangle. -->
+  <rect x="232" y="16" width="290" height="163.1" rx="19" fill="url(#violet)"/>
+  <rect x="232" y="16" width="290" height="163.1" rx="19" fill="#ffffff" fill-opacity=".12"/>
+  <polygon points="357.7,68.2 409.2,97.55 357.7,126.9" fill="#ffffff" fill-opacity=".92"/>
+
+  <!-- The goose and the couch: the icon's, a little smaller, on the left of the room. -->
+  <g transform="translate(30 240) scale(.9) translate(-20 -240)">
+    <g transform="translate(18 8) scale(.82)">
+      <g fill="none" stroke="url(#rim)" stroke-width="6" stroke-linejoin="round">
+        <path d="M86 230 C 80 190, 84 150, 104 124 L 124 136 C 112 154, 110 190, 114 230 Z"/>
+        <circle cx="116" cy="120" r="19"/>
+        <path d="M130 112 L 154 118 L 132 128 Z"/>
+      </g>
+      <g fill="#15102a">
+        <path d="M86 230 C 80 190, 84 150, 104 124 L 124 136 C 112 154, 110 190, 114 230 Z"/>
+        <circle cx="116" cy="120" r="19"/>
+        <path d="M130 112 L 154 118 L 132 128 Z"/>
+      </g>
+    </g>
+    <g fill="#1c1636">
+      <rect x="30" y="196" width="190" height="44" rx="14"/>
+      <rect x="20" y="176" width="34" height="64" rx="14"/>
+      <rect x="196" y="176" width="34" height="64" rx="14"/>
+    </g>
+    <rect x="40" y="160" width="170" height="40" rx="14" fill="#241c44"/>
+  </g>
+</svg>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- The Mac App Store's sandbox: the app reaches its own servers and the files the person chooses. -->
+	<key>com.apple.security.app-sandbox</key>
+	<true/>
+	<key>com.apple.security.network.client</key>
+	<true/>
+	<key>com.apple.security.files.user-selected.read-write</key>
+	<true/>
+	<!-- The app's keychain group, as on the iPhone: with it the Mac uses the iPhone's
+	     kind of keychain (see Keychain.query), which never asks the person anything. -->
+	<key>keychain-access-groups</key>
+	<array>
+		<string>$(AppIdentifierPrefix)com.goosehouse.jellygoose</string>
+	</array>
+	<!-- Settings and pins shared with the person's other devices, in the same store as theirs. -->
+	<key>com.apple.developer.ubiquity-kvstore-identifier</key>
+	<string>$(TeamIdentifierPrefix)com.goosehouse.jellygoose</string>
+</dict>
+</plist>

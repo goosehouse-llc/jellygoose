@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<!-- The languages the string catalog is translated into, so the system
+	     offers them and the App Store lists them. -->
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>es</string>
+		<string>fr</string>
+		<string>de</string>
+		<string>it</string>
+		<string>pt-BR</string>
+		<string>nl</string>
+		<string>ja</string>
+		<string>zh-Hans</string>
+	</array>
+	<key>CFBundleDisplayName</key>
+	<string>JellyGoose</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(MARKETING_VERSION)</string>
+	<!-- To ask whether the YouTube app is there, for a film's trailer. -->
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>youtube</string>
+	</array>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<!-- Only HTTPS/TLS, which is exempt: this answers App Store Connect's
+	     export-compliance question so uploads don't stop to ask. -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>NSHumanReadableCopyright</key>
+	<string>© 2026 Goosehouse LLC</string>
+	<!-- A film carries on in picture-in-picture, sound and all, when the app
+	     is left. -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+		<string>fetch</string>
+	</array>
+	<!-- New-episode alerts: a look at the server now and then (NewEpisodes). -->
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.goosehouse.jellygoose.newepisodes</string>
+	</array>
+	<!-- Downloads coming down, on the Lock Screen and in the Dynamic Island. -->
+	<key>NSSupportsLiveActivities</key>
+	<true/>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Figtree-Regular.ttf</string>
+		<string>Figtree-Medium.ttf</string>
+		<string>Figtree-SemiBold.ttf</string>
+		<string>Figtree-Bold.ttf</string>
+		<string>Figtree-ExtraBold.ttf</string>
+		<string>Figtree-Black.ttf</string>
+		<string>Figtree-Italic.ttf</string>
+	</array>
+	<!-- The car's display is a scene of its own, beside the app's window
+	     (which SwiftUI makes without being named here). -->
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<true/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>CPTemplateApplicationSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneClassName</key>
+					<string>CPTemplateApplicationScene</string>
+					<key>UISceneConfigurationName</key>
+					<string>CarPlay</string>
+					<key>UISceneDelegateClassName</key>
+					<string>$(PRODUCT_MODULE_NAME).CarPlaySceneDelegate</string>
+				</dict>
+			</array>
+			<!-- No plain-window car scene (CarScreenSceneDelegate): iOS hands one
+			     only to an app holding the CarPlay video entitlement beside
+			     another, which App Review refused for 1.7.1. With audio alone,
+			     every car opens the lists above. Sam's own car build
+			     (the CarScreen configuration: the "JellyGoose Car Screen" scheme
+			     or Tools/car-screen.sh) builds from a copy of this file with it
+			     added. -->
+		</dict>
+	</dict>
+	<!-- Not on iPad, which has no CarPlay: there, supporting several scenes
+	     would let the app be opened in several windows, all sharing one
+	     player and one signed-in state. -->
+	<key>UIApplicationSceneManifest~ipad</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+	</dict>
+	<key>UIUserInterfaceStyle</key>
+	<string>Dark</string>
+	<!-- An empty launch screen: the app's own background, then Home. -->
+	<key>UILaunchScreen</key>
+	<dict/>
+	<!-- iPhone: upright to browse, either way on its side to watch. -->
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<!-- Every way up, which iPad multitasking asks for. -->
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<!-- Setup asks the local network which Jellyfin servers are on it, so an
+	     address needn't be typed. -->
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>JellyGoose looks for Jellyfin servers on your network, so you can pick yours instead of typing its address.</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<!-- A home media server is typically plain HTTP, and the viewer types
+		     its address themselves: the app has no fixed domain to pin an
+		     exception to. Plain HTTP is allowed anywhere: at home, over Tailscale
+		     (whose 100.x addresses the system doesn't count as local) and over
+		     the internet, which is the viewer's to decide; the app says so when a
+		     connection isn't encrypted. NSAllowsLocalNetworking must stay out:
+		     with it present the system ignores NSAllowsArbitraryLoads, and a
+		     server's Tailscale address couldn't be reached at all. -->
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<!-- jellygoose://item/<id> opens an item's page, jellygoose://play/<id>
+	     starts it. -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.goosehouse.jellygoose</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>jellygoose</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

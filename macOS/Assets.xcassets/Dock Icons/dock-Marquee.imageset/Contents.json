@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "dock-Marquee.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

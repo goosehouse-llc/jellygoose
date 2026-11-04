@@ -1,0 +1,7 @@
+{
+  "info": { "author": "xcode", "version": 1 },
+  "images": [
+    { "filename": "play-tile.png", "idiom": "tv", "scale": "1x" },
+    { "filename": "play-tile@2x.png", "idiom": "tv", "scale": "2x" }
+  ]
+}
