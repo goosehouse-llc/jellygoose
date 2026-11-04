@@ -167,8 +167,10 @@ struct HomeView: View {
     /// A card was chosen: a film or an episode plays, a channel is tuned, a
     /// song plays with the rest of the row after it.
     private func play(_ item: BaseItem) {
-        // Nothing to play yet: its show's page, which says when.
-        if AirDay.isComing(item) {
+        // Nothing to play yet: its show's page, which says when. A season
+        // (Recently Added's word for several of its episodes at once): its
+        // show's page, opened on it.
+        if AirDay.isComing(item) || item.type == "Season" {
             showDetails(item)
         } else if item.isAudiobook {
             // A book part-way through: carried on.

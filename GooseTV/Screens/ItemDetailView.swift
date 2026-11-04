@@ -6,7 +6,17 @@ struct ItemDetailView: View {
     @Environment(\.displayScale) private var displayScale
     /// A phone's width: the opener stacks rather than sitting side by side.
     @Environment(\.isNarrow) private var narrow
-    let itemId: String
+    /// What the page was opened for.
+    private let openedId: String
+
+    init(itemId: String) { openedId = itemId }
+
+    /// A season opened by itself (Recently Added lists one where several of
+    /// its episodes came at once): the page is its show's, with that season
+    /// chosen, since a season has no page of its own and nothing to play.
+    @State private var seasonsShow: String?
+    /// The show's, for a season; otherwise what the page was opened for.
+    private var itemId: String { seasonsShow ?? openedId }
 
     /// The page's width, measured: an iPad held upright (or sharing its
     /// screen) is too narrow for the opener's two columns side by side, though
@@ -127,7 +137,7 @@ struct ItemDetailView: View {
         }
         // The shelves at the foot of the page, apart: Play and focus don't
         // wait on them (similar titles are often the server's slowest answer).
-        .task { await loadShelves() }
+        .task(id: itemId) { await loadShelves() }
         // The title's theme song while the page is up, and its trailer.
         .task(id: item?.id) {
             guard let item, let client = app.client else { return }
@@ -778,6 +788,16 @@ struct ItemDetailView: View {
         // A newer reload has started meanwhile, or the page has gone: that
         // one's answer is the one to keep.
         guard !Task.isCancelled else { return }
+        if let fetched, fetched.type == "Season", let show = fetched.seriesId, seasonsShow == nil {
+            seasonsShow = show
+            selectedSeasonId = fetched.id
+            // The season's shelves, if any came, aren't the show's.
+            shelvesFetched = false
+            similar = []
+            extras = []
+            await load()
+            return
+        }
         if let fetched {
             item = fetched
             loadedRevision = revision
@@ -842,6 +862,8 @@ struct ItemDetailView: View {
             group.addTask { .similar(try? await client.similar(to: itemId, limit: 24)) }
             group.addTask { .extras(await client.extras(for: itemId)) }
             for await result in group {
+                // Opened as a season and since turned to its show: not these.
+                guard itemId == self.itemId else { continue }
                 switch result {
                 case .similar(let fetched):
                     similar = withoutCopies(fetched ?? [])
