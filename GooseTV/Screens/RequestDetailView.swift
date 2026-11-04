@@ -219,7 +219,10 @@ struct RequestDetailView: View {
                     }
                     .padding(.top, 10)
                 }
-                if !seasons.isEmpty { seasonList }
+                if let details, !seasons.isEmpty {
+                    SeerrSeasonList(requests: requests, title: title, details: details, libraryID: libraryID,
+                                    specials: specials, allows4K: allows4K) { asking = Ask(in4K: false, seasons: [$0]) }
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -487,43 +490,6 @@ struct RequestDetailView: View {
 
     private var seasons: [SeerrDetails.Season] {
         title.isMovie ? [] : details?.seasons(specials: specials) ?? []
-    }
-
-    private var seasonList: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Seasons")
-                .font(.app(narrow ? 20 : 24, .bold))
-                .foregroundStyle(.white.opacity(0.85))
-                .padding(.top, 14)
-            ForEach(seasons.reversed(), id: \.seasonNumber) { season in
-                let number = season.seasonNumber
-                let standing = details?.standing(ofSeason: number, in4K: false) ?? .unasked
-                let standing4K = allows4K ? details?.standing(ofSeason: number, in4K: true) : nil
-                Button {
-                    // One that can be asked for opens the asking, with it ticked.
-                    if standing == .unasked { asking = Ask(in4K: false, seasons: [number]) }
-                } label: {
-                    HStack(spacing: 12) {
-                        Text(season.name ?? String(localized: "Season \(number)"))
-                        if let episodes = season.episodeCount {
-                            Text(episodes == 1 ? String(localized: "1 episode") : String(localized: "\(episodes) episodes"))
-                                .font(.app(14, .semibold))
-                                .foregroundStyle(.white.opacity(0.6))
-                                .padding(.horizontal, CGFloat(10).scaled)
-                                .padding(.vertical, CGFloat(2).scaled)
-                                .background(.black.opacity(0.4), in: Capsule())
-                        }
-                        Spacer()
-                        if let badge = standing.badge { SeerrBadgeView(badge: badge) }
-                        if let badge = standing4K?.badge { SeerrBadgeView(badge: badge, prefix: "4K") }
-                    }
-                    .font(.app(18, .medium))
-                    .padding(.horizontal, CGFloat(18).scaled)
-                    .padding(.vertical, CGFloat(11).scaled)
-                }
-                .buttonStyle(SettingsRowStyle())
-            }
-        }
     }
 
     // MARK: Loading
