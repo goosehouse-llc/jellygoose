@@ -10,7 +10,7 @@
 	<key>com.apple.developer.carplay-audio</key>
 	<true/>
 	<!-- Named explicitly, rather than left to default, so the Top Shelf extension
-	     shares it. It is the same group the app already used. Sam's own car
+	     shares it. It is the same group the app already used. The own-iPhone car
 	     build signs with JellyGooseiOS-CarScreen.entitlements: keep the two
 	     the same apart from CarPlay video. -->
 	<key>keychain-access-groups</key>

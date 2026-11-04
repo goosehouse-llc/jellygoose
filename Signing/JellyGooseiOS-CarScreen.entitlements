@@ -2,7 +2,7 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<!-- Sam's own iPhone only, never the App Store (Tools/car-screen.sh): the
+	<!-- A developer's own iPhone only, never the App Store (Tools/car-screen.sh): the
 	     app's entitlements with CarPlay video beside CarPlay audio. With both,
 	     iOS gives the app a plain window on the screen of a car that can't show
 	     CarPlay video, and the app draws its own car screen there

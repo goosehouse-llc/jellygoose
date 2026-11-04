@@ -49,7 +49,7 @@ Each of these is a claim someone can check:
   from a point and from the start, Pause, seek, Play/Pause, Stop, audio and
   subtitle changes on all three players (system player, AetherEngine, VLC), a
   show, Shuffle, and a film sent over Live TV and over another film. Not yet
-  seen on Sam's TVs. An account sees only its own sessions unless the server
+  seen on a real Apple TV. An account sees only its own sessions unless the server
   lets it control others'. Jellyfin only.
 - **SDR video in HDR** asks tvOS for HDR10 at the film's own frame rate; seen
   giving the brighter picture on two Apple TVs. Off by default.

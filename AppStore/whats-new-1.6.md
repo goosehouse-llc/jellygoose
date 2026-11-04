@@ -52,7 +52,7 @@ Each of these is a claim someone can check:
   only for a programme the server is recording.
 - **Commercials** need the server to mark them (Comskip Commercial Segments
   plugin, or any that writes Commercial segments). The marks are only as good as
-  the detector: right on ABC and FOX in Sam's tests, wrong on one news programme.
+  the detector: right on ABC and FOX in our tests, wrong on one news programme.
   Offered by default; skipped automatically only by the switch.
 - **Search** asks the listings by name (`LiveTvProgram`), one card a programme.
 - **Sleep timer** lengths are 15, 30, 45, 60 and 90 minutes, and When This Ends.

@@ -128,9 +128,8 @@ The app collects no data and contains no advertising or analytics. It communicat
 ## Screenshots
 
 `AppStore/final-mac/`, ten at 2560×1600 (the window at 1280×800 points, on a
-Retina display), in the iPad set's order and on the same titles, at Sam's word
-(2026-10-28, "why are the mac screenshots not the same as the other
-platforms"): The Matrix Resurrections' page, Home with Bluey leading, Now
+Retina display), in the iPad set's order and on the same titles
+(2026-10-28, so the Mac matches the other platforms): The Matrix Resurrections' page, Home with Bluey leading, Now
 Playing for the made-up album "Northbound", the Live TV guide and Live TV full
 screen on the test channels, Bluey's page, the Movies library, 13 Hours
 playing, Downloads (two Bluey episodes), Requests (Seerr's Trending).

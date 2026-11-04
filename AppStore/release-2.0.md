@@ -1,6 +1,6 @@
 # JellyGoose 2.0 — App Store copy
-2.0 (build 107) on all three platforms, entered 2026-10-28 at Sam's word ("let's bump to 2.0 and submit all
-platforms"): the Mac's first version (its 1.9 entry renamed), offline music and audiobooks, download
+2.0 (build 107) on all three platforms, entered 2026-10-28:
+the Mac's first version (its 1.9 entry renamed), offline music and audiobooks, download
 quality, the server dashboard and new-episode alerts. Each platform's text below is what App Store
 Connect has, read back; all three release by hand (MANUAL). Keywords carried over. Header: the goose
 before the violet play screen (asset 27400019…) on all three.

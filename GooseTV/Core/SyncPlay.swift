@@ -463,7 +463,7 @@ final class SyncPlay: ObservableObject {
         String(localized: "No groups to join", comment: "Watch Together: the server has no groups at the moment")
     }
 
-    /// "Sam's Group".
+    /// "Alex's Group".
     static func newGroupName(for user: String?) -> String {
         guard let user, !user.isEmpty else { return title }
         return String(localized: "\(user)'s Group", comment: "Watch Together: the name given to a new group; the placeholder is the name of the person who started it")
@@ -473,9 +473,9 @@ final class SyncPlay: ObservableObject {
         group.groupName.flatMap { $0.isEmpty ? nil : $0 } ?? title
     }
 
-    /// "Join Sam's Group".
+    /// "Join Alex's Group".
     static func joinTitle(_ group: SyncPlayGroupInfo) -> String {
-        String(localized: "Join \(name(of: group))", comment: "Watch Together: joins a group; the placeholder is its name, like Sam's Group")
+        String(localized: "Join \(name(of: group))", comment: "Watch Together: joins a group; the placeholder is its name, like Alex's Group")
     }
 
     /// Who's in it: "Sam, Dave".

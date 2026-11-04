@@ -1,10 +1,9 @@
 # JellyGoose 2.0.1 — App Store copy (all three platforms)
 
-A fix release for 2.0, build 108, prepared 2026-10-29 at Sam's word ("prs merged,
-prepare 2.0.1"). It carries the fixes from the 2.0 regression run (PR #19, which had
+A fix release for 2.0, build 108, prepared 2026-10-29. It carries the fixes from the 2.0 regression run (PR #19, which had
 been merged into #18's branch after that branch went into main, so they reached main
 with this release's PR instead). Found on iPhone, iPad and Apple TV simulators against
-the throwaway server, with Sam's server read-only; the Mac part found nothing new.
+the throwaway server, with a home server read-only; the Mac part found nothing new.
 
 The app's What's New card shows 2.0's on 2.0.1 (`WhatsNew.version` maps 2.0.1 to 2.0),
 so someone coming straight from 1.8.1 still sees it, and no one sees it twice.
