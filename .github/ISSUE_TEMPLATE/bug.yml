@@ -1,0 +1,39 @@
+name: Bug report
+description: Something doesn't work as it should
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. Open Movies\n2. Press right into the letters\n3. ..."
+  - type: dropdown
+    id: device
+    attributes:
+      label: Device
+      multiple: true
+      options: [Apple TV, iPhone, iPad, Mac, CarPlay]
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: JellyGoose (Settings → About), your OS, and your server (Jellyfin or Emby, and its version)
+      placeholder: "JellyGoose 2.0.1 (108), tvOS 27.0, Jellyfin 10.11.2"
+    validations:
+      required: true
+  - type: textarea
+    id: media
+    attributes:
+      label: For playback problems
+      description: The Stats panel's Player and Playback lines (the Stats button in the player), and the file's container, video and audio codecs.
+  - type: markdown
+    attributes:
+      value: Please leave out your server's address, user names and anything else private. Security problems go to SECURITY.md, not here.

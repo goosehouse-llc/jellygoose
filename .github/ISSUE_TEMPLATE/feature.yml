@@ -1,0 +1,21 @@
+name: Feature request
+description: Something JellyGoose should do
+labels: [enhancement]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What would you like, and what would you use it for?
+    validations:
+      required: true
+  - type: dropdown
+    id: device
+    attributes:
+      label: Where
+      multiple: true
+      options: [Apple TV, iPhone, iPad, Mac, CarPlay]
+  - type: textarea
+    id: elsewhere
+    attributes:
+      label: Seen it done well elsewhere?
+      description: Another app, Jellyfin's web player, a screenshot.

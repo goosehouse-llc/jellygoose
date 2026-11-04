@@ -88,6 +88,21 @@ open GooseTV.xcodeproj   # build & run on Apple TV simulator or device
 ```
 
 The project file is generated from `project.yml`; don't edit the `.xcodeproj` by hand.
+
+**Without the Goosehouse developer account** (any outside contributor), simulators need
+no account at all: pick a simulator in Xcode and run, or from the command line
+
+```sh
+xcodebuild -project GooseTV.xcodeproj -scheme GooseTV \
+  -destination 'platform=tvOS Simulator,name=Apple TV 4K (3rd generation)' \
+  DEVELOPMENT_TEAM= CODE_SIGN_IDENTITY=- ARCHS=arm64 build
+```
+
+(`JellyGooseiOS` and `JellyGooseMac` are the iPhone/iPad and Mac schemes.) The playback
+engine's Dolby Vision library has no Intel slice, so simulator builds are Apple silicon
+only. For your own Apple TV or iPhone, set your team and change the bundle identifiers
+(`com.goosehouse.…`) and the app group and iCloud container in `Signing/` to ones of your
+own; please don't commit those changes.
 The version and build number live there too: bump `CURRENT_PROJECT_VERSION` for every
 App Store upload.
 
