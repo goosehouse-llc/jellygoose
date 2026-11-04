@@ -437,7 +437,8 @@ final class MediaBrowserClient: MediaServer {
     func libraryItems(parentId: String, startIndex: Int = 0, limit: Int = 100,
                       sortBy: String = "SortName", sortOrder: String = "Ascending",
                       genres: [String] = [], years: [Int] = [], filters: [String] = [],
-                      itemTypes: String = "Movie,Series", nameLessThan: String? = nil) async throws -> ItemsResult {
+                      itemTypes: String = "Movie,Series", nameLessThan: String? = nil,
+                      ids: [String] = []) async throws -> ItemsResult {
         let uid = try requireUser()
         var query = [
             "ParentId": parentId,
@@ -453,9 +454,10 @@ final class MediaBrowserClient: MediaServer {
         if !years.isEmpty { query["Years"] = years.map(String.init).joined(separator: ",") }
         if !filters.isEmpty { query["Filters"] = filters.joined(separator: ",") }
         if let nameLessThan { query["NameLessThan"] = nameLessThan }
+        if !ids.isEmpty { query["Ids"] = ids.joined(separator: ",") }
         // A grid's alphabet index marks the letter of the title in focus; the
         // rest are what lists put in order here are sorted by (see
-        // `favoriteShowEpisodes`). Jellyfin sends most of them unasked; Emby
+        // `showEpisodes`). Jellyfin sends most of them unasked; Emby
         // sends what it's asked for.
         if limit > 0 {
             query["Fields"] = "SortName,DateCreated,PremiereDate,ProductionYear,CommunityRating,CriticRating,PrimaryImageAspectRatio"

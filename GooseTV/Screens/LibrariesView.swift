@@ -207,6 +207,20 @@ struct LibraryGridState {
     /// Whether the genres and decades have been fetched: a library with none
     /// isn't asked again on every visit.
     var choicesLoaded = false
+    /// Shows being chosen for the filters, in the grid itself (see
+    /// `ShowChoice`); nil the rest of the time. Kept here rather than by the
+    /// page, so that leaving the section halfway through doesn't lose the
+    /// filters it was started from.
+    var showChoice: ShowChoice?
+}
+
+/// A TV library's shows being chosen, a press on each poster: every show is
+/// listed A to Z meanwhile, and the filters it was started from come back
+/// when it's done, with the shows ticked (or as they were, if cancelled).
+struct ShowChoice {
+    let returning: LibraryFilters
+    /// The ticked shows' names, by id.
+    var shows: [String: String]
 }
 
 /// A grid's data in an object of its own. The grid watches it; whatever keeps
@@ -449,6 +463,16 @@ struct LibraryGrid: View {
     /// Whether this is a library the server records into, from which this
     /// account may delete.
     private var deletable: Bool { app.recordingLibraries.contains(library.id) }
+
+    /// Cards being chosen in the grid, a press on each: recordings to
+    /// delete, or shows for the filters.
+    private var picking: Bool { selecting || state.showChoice != nil }
+    /// One that can be chosen: a show among shows, a recording among recordings.
+    private func pickable(_ item: BaseItem) -> Bool {
+        state.showChoice != nil ? item.isSeries : item.isOneVideo
+    }
+    /// The ones chosen so far.
+    private var pickedIDs: Set<String> { state.showChoice.map { Set($0.shows.keys) } ?? chosen }
     /// A playlist or a collection this account may change (its own playlist,
     /// or collections it may manage): what's in it can be taken out.
     @State private var containerEditable = false
@@ -464,7 +488,7 @@ struct LibraryGrid: View {
     var byDay: Bool { Self.byDay(state.filters, in: holdsRecordings) }
 
     static func byDay(_ filters: LibraryFilters, in recordings: Bool) -> Bool {
-        recordings && filters.sort == .added && !filters.episodes && !filters.favoriteShows
+        recordings && filters.sort == .added && !filters.episodes
     }
 
     /// The line under a title, where there's one: when a recording was made.
@@ -653,7 +677,8 @@ struct LibraryGrid: View {
             #if os(tvOS)
             resetBand()
             #endif
-            if model.remembersFilters { app.saveFilters(filters, for: library.id) }
+            // Not every show's, listed only while some are being chosen.
+            if model.remembersFilters, state.showChoice == nil { app.saveFilters(filters, for: library.id) }
             Task { await reload(fresh: true) }
         }
     }
@@ -814,6 +839,29 @@ struct LibraryGrid: View {
     private var filterBar: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 16) {
+                // Shows being chosen: done, none, or as they were.
+                if let choice = state.showChoice {
+                    Button {
+                        finishChoosingShows(keep: true)
+                    } label: {
+                        FilterChipLabel(icon: "checkmark", text: String(localized: "Done"))
+                    }
+                    .buttonStyle(.chip(active: true))
+                    if !choice.shows.isEmpty {
+                        Button {
+                            state.showChoice?.shows = [:]
+                        } label: {
+                            FilterChipLabel(icon: "circle", text: String(localized: "Choose None", comment: "Chip while shows are being chosen for a TV library's filters: unticks every show"))
+                        }
+                        .buttonStyle(.chip(active: false))
+                    }
+                    Button {
+                        finishChoosingShows(keep: false)
+                    } label: {
+                        FilterChipLabel(icon: "xmark", text: String(localized: "Cancel"))
+                    }
+                    .buttonStyle(.chip(active: false))
+                } else
                 // The server's recordings, chosen several at a time to be
                 // deleted: nothing else in the bar while that's going on.
                 if deletable, selecting {
@@ -931,6 +979,15 @@ struct LibraryGrid: View {
                 }
 
                 if library.collectionType == "tvshows" {
+                    // Some shows and no others: chosen in the grid, a poster at a time.
+                    Button {
+                        chooseShows()
+                    } label: {
+                        FilterChipLabel(icon: state.filters.shows.isEmpty ? "tv" : "tv.fill", text: showsChipText)
+                    }
+                    .accessibilityLabel(showsChipText)
+                    .buttonStyle(.chip(active: !state.filters.shows.isEmpty))
+
                     Button {
                         state.filters.episodes.toggle()
                     } label: {
@@ -990,6 +1047,16 @@ struct LibraryGrid: View {
     /// more under it than a press should delete, can't be. Nil the rest of
     /// the time, when a card opens its page.
     private func pick(_ item: BaseItem) -> CardPick? {
+        if let choice = state.showChoice {
+            guard item.isSeries else { return CardPick(picked: false, toggle: nil) }
+            return CardPick(picked: choice.shows[item.id] != nil) {
+                if state.showChoice?.shows[item.id] != nil {
+                    state.showChoice?.shows[item.id] = nil
+                } else {
+                    state.showChoice?.shows[item.id] = item.displayTitle
+                }
+            }
+        }
         guard selecting else { return nil }
         guard item.isOneVideo else { return CardPick(picked: false, toggle: nil) }
         return CardPick(picked: chosen.contains(item.id)) {
@@ -1000,6 +1067,47 @@ struct LibraryGrid: View {
     private func stopSelecting() {
         selecting = false
         chosen = []
+    }
+
+    /// Every show, A to Z, to tick the ones wanted; those already in the
+    /// filters start ticked.
+    private func chooseShows() {
+        // The chip goes with the bar it's in, and focus stays on the page.
+        app.holdMenuFocus()
+        let returning = state.filters
+        state.showChoice = ShowChoice(returning: returning, shows: returning.shows)
+        state.filters = LibraryFilters()
+    }
+
+    /// Back to the filters choosing started from: with the shows ticked, or
+    /// as they were.
+    private func finishChoosingShows(keep: Bool) {
+        guard let choice = state.showChoice else { return }
+        app.holdMenuFocus()
+        var filters = choice.returning
+        if keep { filters.shows = choice.shows }
+        state.showChoice = nil
+        state.filters = filters
+        #if os(tvOS)
+        // On to the first title once they're here. Left in the bar, focus
+        // went to Clear, where Done had been, and a second press cleared it all.
+        Task {
+            for _ in 0..<100 where model.itemsFilters != filters || loading {
+                try? await Task.sleep(for: .milliseconds(50))
+            }
+            guard state.filters == filters, state.showChoice == nil, let first = state.items.first?.id else { return }
+            focusedItem = first
+        }
+        #endif
+    }
+
+    private var showsChipText: String {
+        let shows = state.filters.showList
+        switch shows.count {
+        case 0: return String(localized: "Shows", comment: "Filter chip in a TV library: starts choosing which shows to list")
+        case 1: return shows[0]
+        default: return String(localized: "\(shows.count) shows", comment: "Filter chip: how many shows are chosen")
+        }
     }
 
     /// What a long press offers among the recordings, beyond what any
@@ -1164,6 +1272,13 @@ struct LibraryGrid: View {
     }
 
     private var countLabel: String {
+        if let choice = state.showChoice {
+            switch choice.shows.count {
+            case 0: return String(localized: "Choose the shows to list", comment: "Over a TV library while shows are being chosen for its filters; none is ticked yet")
+            case 1: return String(localized: "1 show chosen", comment: "Over a TV library while shows are being chosen for its filters; one is ticked")
+            default: return String(localized: "\(choice.shows.count) shows chosen", comment: "Over a TV library while shows are being chosen for its filters")
+            }
+        }
         guard state.loaded else { return String(localized: "Library") }
         let total = state.total
         if state.filters.sort == .random {
@@ -1211,8 +1326,8 @@ struct LibraryGrid: View {
         // In a long list, only the titles around where the viewer is: what a
         // film's page or a player changed is there, and refetching two
         // thousand titles each time a film closed was 2 MB for nothing.
-        // (Not the favourite shows' episodes, which only come whole.)
-        if !fresh, state.items.count > Self.refreshWindow, !requested.favoriteShows,
+        // (Not the favourite or chosen shows' episodes, which only come whole.)
+        if !fresh, state.items.count > Self.refreshWindow, !requested.episodesByShow,
            !Self.byDay(requested, in: holdsRecordings),
            await refreshAround(client, filters: requested) {
             model.fetchedAtRevision = revision
@@ -1249,7 +1364,7 @@ struct LibraryGrid: View {
         let items = state.items.compactMap { byID[$0.id] }.filter { item in
             (!requested.unwatched || item.userData?.played != true)
                 // An episode there for its show is no favourite itself.
-                && (!requested.favorites || requested.favoriteShows || item.userData?.isFavorite == true)
+                && (!requested.favorites || requested.episodesByShow || item.userData?.isFavorite == true)
         }
         if state.loaded { app.holdMenuFocus() }
         state.items = items
@@ -1634,7 +1749,7 @@ extension LibraryGrid {
                         heading: dayPlan.flatMap { $0.headings.indices.contains(row) ? $0.headings[row] : nil },
                         headed: byDay, note: holdsRecordings ? note : nil,
                         onlyFocusable: onlyFocusable(inRow: row), focus: $focusedItem,
-                        picked: selecting ? chosen.intersection(items(inRow: row).map(\.id)) : nil, pick: pick,
+                        picked: picking ? pickedIDs.intersection(items(inRow: row).map(\.id)) : nil, pick: pick,
                         menu: showActions,
                         showDetails: { navigator.showItem($0.seriesId ?? $0.id) },
                         play: { playingItem = $0 }))
@@ -1687,9 +1802,9 @@ extension LibraryGrid {
     /// landing on it left the row with nothing to take focus at all.
     private var landingID: String? {
         let row = items(inRow: bandRow)
-        if selecting {
-            if let id = model.focusedTitle, row.contains(where: { $0.id == id && $0.isOneVideo }) { return id }
-            return row.first(where: \.isOneVideo)?.id
+        if picking {
+            if let id = model.focusedTitle, row.contains(where: { $0.id == id && pickable($0) }) { return id }
+            return row.first(where: pickable)?.id
         }
         if let id = model.focusedTitle, self.row(of: id) == bandRow { return id }
         return row.first?.id
@@ -2108,6 +2223,9 @@ struct LibraryFilters: Codable, Hashable {
     var favorites = false
     /// TV libraries only: list episodes themselves rather than shows.
     var episodes = false
+    /// TV libraries only: these shows and no others (or their episodes), by
+    /// id, with their names for the chip and a pinned view's name.
+    var shows: [String: String] = [:]
 
     init() {}
 
@@ -2121,6 +2239,7 @@ struct LibraryFilters: Codable, Hashable {
         unwatched = try c.decodeIfPresent(Bool.self, forKey: .unwatched) ?? false
         favorites = try c.decodeIfPresent(Bool.self, forKey: .favorites) ?? false
         episodes = try c.decodeIfPresent(Bool.self, forKey: .episodes) ?? false
+        shows = try c.decodeIfPresent([String: String].self, forKey: .shows) ?? [:]
         // Pins from when a library took one genre.
         if genres.isEmpty, let genre = try decoder.container(keyedBy: OneGenre.self)
             .decodeIfPresent(String.self, forKey: .genre) {
@@ -2130,13 +2249,19 @@ struct LibraryFilters: Codable, Hashable {
 
     private enum OneGenre: String, CodingKey { case genre }
 
-    /// Episodes and Favourites together: the episodes of the favourite shows,
-    /// not only the episodes that are favourites themselves.
-    var favoriteShows: Bool { episodes && favorites }
+    /// Episodes of a set of shows, asked for a show at a time: Episodes and
+    /// Favourites together (the favourite shows' episodes, not only the
+    /// episodes that are favourites themselves), or Episodes with shows chosen.
+    var episodesByShow: Bool { episodes && (favorites || !shows.isEmpty) }
 
     /// Whether anything leaves titles out (or lists episodes instead).
     var narrows: Bool {
-        !genres.isEmpty || !decades.isEmpty || unwatched || favorites || episodes
+        !genres.isEmpty || !decades.isEmpty || unwatched || favorites || episodes || !shows.isEmpty
+    }
+
+    /// The chosen shows' names, A to Z.
+    var showList: [String] {
+        shows.values.sorted { $0.localizedStandardCompare($1) == .orderedAscending }
     }
 
     /// The server's SortBy / SortOrder values, this way round.
@@ -2165,10 +2290,11 @@ extension MediaServer {
     /// or the first titles of a pinned view's row on Home.
     func listing(of library: BaseItem, filters requested: LibraryFilters, recordings: Bool,
                  startIndex: Int, limit: Int, before letter: String? = nil) async throws -> ItemsResult {
-        // Episodes of the favourite shows take more than one question to the
-        // server, and come all at once: everything from `startIndex` on.
-        if requested.favoriteShows {
-            let all = try await favoriteShowEpisodes(in: library.id, filters: requested)
+        // Episodes of the favourite shows, or the chosen ones, take more than
+        // one question to the server, and come all at once: everything from
+        // `startIndex` on.
+        if requested.episodesByShow {
+            let all = try await showEpisodes(in: library.id, filters: requested)
             return ItemsResult(items: Array(all.dropFirst(startIndex)), totalRecordCount: all.count)
         }
         let listedTypes = recordings ? BaseItem.recordingTypes : library.listedTypes
@@ -2186,31 +2312,49 @@ extension MediaServer {
             let ordered = requested.reversed ? Array(newestFirst.reversed()) : newestFirst
             return ItemsResult(items: Array(ordered.dropFirst(startIndex)), totalRecordCount: ordered.count)
         }
+        let itemTypes = requested.episodes ? "Episode" : listedTypes
+        // Too many shows chosen for one address (the server takes about
+        // 8 KB of one, each id 33 characters of it): the whole library, in
+        // order, and only the chosen shows kept from it.
+        if requested.shows.count > Self.idsAtOnce {
+            let all = try await libraryItems(parentId: library.id, startIndex: 0, limit: 10_000,
+                                             sortBy: sortBy, sortOrder: order,
+                                             genres: requested.genreList, years: requested.years, filters: flags,
+                                             itemTypes: itemTypes, nameLessThan: letter, ids: [])
+            let kept = all.items.filter { requested.shows[$0.id] != nil }
+            return ItemsResult(items: Array(kept.dropFirst(startIndex).prefix(limit)), totalRecordCount: kept.count)
+        }
         return try await libraryItems(parentId: library.id, startIndex: startIndex,
                                       limit: limit, sortBy: sortBy, sortOrder: order,
                                       genres: requested.genreList, years: requested.years, filters: flags,
-                                      itemTypes: requested.episodes ? "Episode" : listedTypes,
-                                      nameLessThan: letter)
+                                      itemTypes: itemTypes, nameLessThan: letter, ids: Array(requested.shows.keys))
     }
 
-    /// A TV library's episodes from the shows marked as favourites, with any
-    /// episode marked as one itself: what Episodes and Favourites ask for
-    /// together. The server can only be asked for episodes that are favourites
-    /// themselves, and marking a show marks none of its episodes, so asked
-    /// that way a favourite show's episodes never came.
+    /// The most titles asked for by id in one question to the server.
+    static var idsAtOnce: Int { 150 }
+
+    /// A TV library's episodes from the shows chosen in the filters, or the
+    /// shows marked as favourites (with any episode marked as one itself), or
+    /// both: what Episodes asks for with either. The server can only be asked
+    /// for episodes that are favourites themselves, and marking a show marks
+    /// none of its episodes, so asked that way a favourite show's episodes
+    /// never came; and it has no asking for the episodes of several shows.
     ///
     /// They are asked for a show at a time instead and put in order here, all
     /// of them at once: there is no asking the server for the second hundred
     /// of a list it never made. By title that is a show at a time, A to Z,
     /// each in the order it aired; by anything else, every show's together.
-    func favoriteShowEpisodes(in libraryId: String, filters: LibraryFilters) async throws -> [BaseItem] {
+    func showEpisodes(in libraryId: String, filters: LibraryFilters) async throws -> [BaseItem] {
         let (sortBy, order) = filters.sortAPI
         let flags = filters.unwatched ? ["IsUnplayed"] : []
-        let shows = try await libraryItems(parentId: libraryId, startIndex: 0, limit: 500,
+        let chosen = Array(filters.shows.keys)
+        var shows = try await libraryItems(parentId: libraryId, startIndex: 0, limit: 5000,
                                            sortBy: "SortName",
                                            sortOrder: filters.sort == .title ? order : "Ascending",
-                                           genres: [], years: [], filters: ["IsFavorite"],
-                                           itemTypes: "Series", nameLessThan: nil).items
+                                           genres: [], years: [], filters: filters.favorites ? ["IsFavorite"] : [],
+                                           itemTypes: "Series", nameLessThan: nil,
+                                           ids: chosen.count > Self.idsAtOnce ? [] : chosen).items
+        if !chosen.isEmpty { shows = shows.filter { filters.shows[$0.id] != nil } }
         var byShow = Array(repeating: [BaseItem](), count: shows.count)
         // Six shows at a time: asked for forty at once, a server is slow with all of them.
         for first in stride(from: 0, to: shows.count, by: 6) {
@@ -2228,15 +2372,20 @@ extension MediaServer {
                 for try await (index, episodes) in group { byShow[index] = episodes }
             }
         }
-        // Episodes marked themselves, from shows that aren't: after the shows.
-        let marked = try await libraryItems(parentId: libraryId, startIndex: 0, limit: 1000,
-                                            sortBy: sortBy, sortOrder: order,
-                                            genres: filters.genreList, years: filters.years,
-                                            filters: flags + ["IsFavorite"],
-                                            itemTypes: "Episode", nameLessThan: nil).items
         var all = Array(byShow.joined())
-        var seen = Set(all.map(\.id))
-        all += marked.filter { seen.insert($0.id).inserted }
+        // Episodes marked themselves, from shows that aren't: after the shows
+        // (and only the chosen shows', where there are some).
+        if filters.favorites {
+            let marked = try await libraryItems(parentId: libraryId, startIndex: 0, limit: 1000,
+                                                sortBy: sortBy, sortOrder: order,
+                                                genres: filters.genreList, years: filters.years,
+                                                filters: flags + ["IsFavorite"],
+                                                itemTypes: "Episode", nameLessThan: nil).items
+            var seen = Set(all.map(\.id))
+            all += marked.filter { episode in
+                (chosen.isEmpty || filters.shows[episode.seriesId ?? ""] != nil) && seen.insert(episode.id).inserted
+            }
+        }
 
         let descending = order == "Descending"
         switch filters.sort {

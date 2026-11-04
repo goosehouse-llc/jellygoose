@@ -79,11 +79,12 @@ protocol MediaServer: AnyObject {
     func playQueue(for container: BaseItem, shuffled: Bool, limit: Int) async throws -> [BaseItem]
     func latest(in libraryId: String, limit: Int, types: String?) async throws -> [BaseItem]
     /// `nameLessThan` keeps only what sorts before it by name, which with a
-    /// limit of 0 counts where a letter starts.
+    /// limit of 0 counts where a letter starts. `ids`, where there are any,
+    /// keeps only those titles (the shows chosen in a TV library's filters).
     func libraryItems(parentId: String, startIndex: Int, limit: Int,
                       sortBy: String, sortOrder: String,
                       genres: [String], years: [Int], filters: [String],
-                      itemTypes: String, nameLessThan: String?) async throws -> ItemsResult
+                      itemTypes: String, nameLessThan: String?, ids: [String]) async throws -> ItemsResult
     /// These titles as they are now, in no particular order.
     func items(ids: [String]) async throws -> [BaseItem]
     func genres(in parentId: String) async throws -> [String]
@@ -455,7 +456,16 @@ extension MediaServer {
     func libraryItems(parentId: String, limit: Int, itemTypes: String = "Movie,Series") async throws -> ItemsResult {
         try await libraryItems(parentId: parentId, startIndex: 0, limit: limit,
                                sortBy: "SortName", sortOrder: "Ascending",
-                               genres: [], years: [], filters: [], itemTypes: itemTypes, nameLessThan: nil)
+                               genres: [], years: [], filters: [], itemTypes: itemTypes, nameLessThan: nil, ids: [])
+    }
+
+    func libraryItems(parentId: String, startIndex: Int, limit: Int,
+                      sortBy: String, sortOrder: String,
+                      genres: [String], years: [Int], filters: [String],
+                      itemTypes: String, nameLessThan: String?) async throws -> ItemsResult {
+        try await libraryItems(parentId: parentId, startIndex: startIndex, limit: limit,
+                               sortBy: sortBy, sortOrder: sortOrder, genres: genres, years: years, filters: filters,
+                               itemTypes: itemTypes, nameLessThan: nameLessThan, ids: [])
     }
 
     func imageURL(for item: BaseItem, maxWidth: Int) -> URL? {

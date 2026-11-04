@@ -30,7 +30,12 @@ struct PinnedFilter: Codable, Identifiable, Hashable {
     var automaticTitle: String {
         let decades = filters.decades.sorted().map(LibraryFilters.decadeName).joined(separator: ", ")
         let genres = filters.genreList.joined(separator: ", ")
-        var parts = [[decades, genres, libraryName].filter { !$0.isEmpty }.joined(separator: " ")]
+        // The chosen shows stand for the library: "Bluey, Peppa Pig · Episodes".
+        let shows = filters.showList
+        let what = shows.isEmpty ? libraryName
+            : shows.count <= 2 ? shows.joined(separator: ", ")
+            : String(localized: "\(shows.count) shows", comment: "Filter chip: how many shows are chosen")
+        var parts = [[decades, genres, what].filter { !$0.isEmpty }.joined(separator: " ")]
         if filters.episodes { parts.append(String(localized: "Episodes", comment: "Part of a pinned filter's name: the library is listed by episode")) }
         if filters.unwatched { parts.append(String(localized: "Unwatched", comment: "Part of a pinned filter's name: only items not yet watched")) }
         if filters.favorites { parts.append(String(localized: "Favourites", comment: "Part of a pinned filter's name: only favorited items")) }
@@ -41,6 +46,7 @@ struct PinnedFilter: Codable, Identifiable, Hashable {
 
     var icon: String {
         if filters.episodes { return "play.rectangle.fill" }
+        if !filters.shows.isEmpty { return "tv.fill" }
         if !filters.genres.isEmpty { return "theatermasks.fill" }
         if !filters.decades.isEmpty { return "calendar" }
         if filters.favorites { return "star.fill" }
