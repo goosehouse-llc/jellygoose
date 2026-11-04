@@ -92,7 +92,7 @@
 			<!-- No plain-window car scene (CarScreenSceneDelegate): iOS hands one
 			     only to an app holding the CarPlay video entitlement beside
 			     another, which App Review refused for 1.7.1. With audio alone,
-			     every car opens the lists above. Sam's own car build
+			     every car opens the lists above. The own-iPhone car build
 			     (the CarScreen configuration: the "JellyGoose Car Screen" scheme
 			     or Tools/car-screen.sh) builds from a copy of this file with it
 			     added. -->

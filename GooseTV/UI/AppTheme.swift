@@ -101,7 +101,7 @@ enum AppTheme: String, CaseIterable, Identifiable {
                 glowBottom: Color(red: 0.24, green: 0.09, blue: 0.09))
 
         case .evergreen:
-            // Sage (Sam's pick, 2026-10-17, over the brighter mint and teal it
+            // Sage (picked 2026-10-17 over the brighter mint and teal it
             // had): soft grey-greens over a deep green-grey.
             return ThemeColors(
                 background: Color(red: 0.051, green: 0.067, blue: 0.059),

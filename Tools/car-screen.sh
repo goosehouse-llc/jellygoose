@@ -1,6 +1,6 @@
 #!/bin/zsh
-# Puts JellyGoose on Sam's own iPhone with its own car screen: CarPlay video
-# beside CarPlay audio, so a car that can't show CarPlay video (the Audi)
+# Puts JellyGoose on your own iPhone with its own car screen: CarPlay video
+# beside CarPlay audio, so a car that can't show CarPlay video
 # opens the app's own screens and player, picture while parked. App Review
 # refused that pair for iOS 1.7.1 (Guideline 2.5.1), so the App Store build
 # has CarPlay audio alone; this one is never archived or uploaded (the build

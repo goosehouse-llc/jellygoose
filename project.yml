@@ -21,7 +21,7 @@ packages:
     url: https://github.com/superuser404notfound/AetherEngine
     exactVersion: 7.24.0
 # Debug and Release as XcodeGen makes them, and CarScreen: Release with the
-# iPhone app's car screen switched on, for Sam's own iPhone (the "JellyGoose
+# iPhone app's car screen switched on, for a developer's own iPhone (the "JellyGoose
 # Car Screen" scheme, Tools/car-screen.sh). Listed after Release so the
 # targets' own schemes still archive with Release.
 configs:
@@ -113,7 +113,7 @@ targets:
         "CODE_SIGN_ENTITLEMENTS[sdk=iphonesimulator*]": Signing/JellyGooseiOS-CarPlay.entitlements
         GENERATE_INFOPLIST_FILE: NO
         INFOPLIST_FILE: $(GOOSETV_INFOPLIST)
-        # The CarScreen configuration (Sam's own iPhone) sets these two:
+        # The CarScreen configuration (a developer's own iPhone) sets these two:
         # CarPlay video beside audio (JellyGooseiOS-CarScreen.entitlements),
         # and an Info.plist made from iOS/Info.plist with the car screen's
         # scene added (script below). App Review refused that pair (iOS 1.7.1,
@@ -140,7 +140,7 @@ targets:
     # finds it; only CarScreen uses it. An archive of the car build stops here,
     # before anything is compiled.
     preBuildScripts:
-      - name: Car screen (Sam's own iPhone only)
+      - name: Car screen (own iPhone only)
         basedOnDependencyAnalysis: false
         inputFiles:
           - $(SRCROOT)/iOS/Info.plist
@@ -152,7 +152,7 @@ targets:
           cp "${SRCROOT}/iOS/Info.plist" "$car"
           if [ -z "${GOOSETV_CAR_SCREEN}" ]; then exit 0; fi
           if [ "${ACTION}" = "install" ]; then
-            echo "error: The car screen build is for Sam's own iPhone. App Review refused it: archive with the JellyGooseiOS scheme (Release)."
+            echo "error: The car screen build is for your own iPhone only. App Review refused it: archive with the JellyGooseiOS scheme (Release)."
             exit 1
           fi
           key=":UIApplicationSceneManifest:UISceneConfigurations:UIWindowSceneSessionRoleCarPlay"
@@ -288,7 +288,7 @@ targets:
         TARGETED_DEVICE_FAMILY: "1,2"
 
 schemes:
-  # Sam's own iPhone with the car screen: choose this scheme and the iPhone,
+  # Your own iPhone with the car screen: choose this scheme and the iPhone,
   # then Run. Never for the App Store (an archive stops with an error); that's
   # the JellyGooseiOS scheme.
   JellyGoose Car Screen:

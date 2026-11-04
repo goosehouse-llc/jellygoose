@@ -25186,7 +25186,7 @@
       }
     },
     "Join %@" : {
-      "comment" : "Watch Together: joins a group; the placeholder is its name, like Sam's Group",
+      "comment" : "Watch Together: joins a group; the placeholder is its name, like Alex's Group",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
