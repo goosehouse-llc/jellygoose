@@ -291,7 +291,8 @@ struct HomeView: View {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 0) {
                                 ForEach(heroItems) { item in
-                                    HeroBanner(item: item, focusID: item.id, focus: $heroFocus) {
+                                    HeroBanner(item: item, focusID: item.id, focus: $heroFocus,
+                                               showDetails: { showDetails(item) }) {
                                         playingItem = item
                                     }
                                     .containerRelativeFrame(.horizontal)
@@ -664,6 +665,8 @@ struct HeroBanner: View {
     let item: BaseItem
     let focusID: String
     var focus: FocusState<String?>.Binding
+    /// Opens its page (its show's, for an episode) from the long-press menu.
+    var showDetails: (() -> Void)? = nil
     let onPlay: () -> Void
     @State private var press = PressTimer()
     @Environment(\.displayScale) private var displayScale
@@ -750,6 +753,10 @@ struct HeroBanner: View {
             .frame(maxWidth: 900, alignment: .leading)
         }
         .clipShape(RoundedRectangle(cornerRadius: 24))
+        // Held anywhere on the banner, as a card is: its page, and the rest
+        // of a card's menu.
+        .contentShape(.interaction, RoundedRectangle(cornerRadius: 24))
+        .itemContextMenu(item, showDetails: showDetails)
     }
 
     private var heroTitle: String {

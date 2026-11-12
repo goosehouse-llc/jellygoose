@@ -6,6 +6,7 @@ import SwiftUI
 /// offers to record what's on, as its place in the guide does.
 struct LiveNowCard: View {
     @Environment(\.appState) private var app
+    @Environment(\.sectionNavigator) private var navigator
     let item: BaseItem
     /// For a row that tracks and moves focus itself (the Apple TV's Home).
     var focus: FocusState<String?>.Binding? = nil
@@ -79,20 +80,31 @@ struct LiveNowCard: View {
             }
             .frame(width: width, alignment: .leading)
         }
+        // What's on, looked for in the library ahead of a long press, whose
+        // menu can't wait for it (asked once a name: see `libraryTitle`).
+        .task(id: program?.name) {
+            guard let app, let program, app.knownLibraryTitle(for: program) == nil else { return }
+            _ = await app.libraryTitle(for: program)
+        }
     }
 
-    /// What a long press offers: the recording of what's on, by the rules
-    /// the guide goes by. Nothing for an account that may not record, or a
-    /// channel with no listing to say what's on.
+    /// What a long press offers: the page of what's on, where the library
+    /// has the show or the film; the recording of it, by the rules the guide
+    /// goes by. Nothing for a channel with no listing to say what's on.
     private func recordingMenu() -> (heading: ItemMenuRequest.Heading, rows: [ItemMenuAction])? {
         guard let app, let client = app.client, let program else { return nil }
         let now = Date()
+        var rows: [ItemMenuAction] = []
+        if let title = app.knownLibraryTitle(for: program) ?? nil, !navigator.section.isEmpty {
+            let navigator = navigator
+            rows.append(ItemMenuAction(title: title.isSeries ? String(localized: "Go to Show") : String(localized: "Details"),
+                                       icon: "info.circle") { navigator.showItem(title.id) })
+        }
         // Anyone may watch what's being recorded from its start; the rest
         // is for an account that may record.
         let all = LiveTVModel.Recording.choices(for: program, at: now)
         let choices = app.liveCanRecord ? all : all.filter { $0 == .fromStart }
-        guard !choices.isEmpty else { return nil }
-        let rows = choices.map { choice in
+        rows += choices.map { choice in
             ItemMenuAction(title: choice.name(for: program, at: now),
                            icon: choice == .fromStart ? "backward.end" : choice.undoes ? "xmark.circle" : "record.circle",
                            destructive: choice.undoes) {
