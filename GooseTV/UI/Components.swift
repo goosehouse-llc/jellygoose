@@ -197,6 +197,7 @@ struct PickMark: View {
 /// Poster with its title beneath, navigating to the item's detail page.
 /// The one card used by every shelf and grid of navigable posters.
 struct PosterNavCard: View {
+    @Environment(\.sectionNavigator) private var navigator
     let item: BaseItem
     /// Fixed width for shelves; nil lets the card fill its grid cell.
     var width: CGFloat? = nil
@@ -232,7 +233,7 @@ struct PosterNavCard: View {
                 }
                 .buttonStyle(.tvCard)
                 .focused(by: focus, id: focusID ?? item.id)
-                .itemContextMenu(item, offersPlay: true, moreActions: menuActions)
+                .itemContextMenu(item, offersPlay: true, showDetails: goToShow, moreActions: menuActions)
                 .accessibilityLabel(item.spokenDescription)
                 .accessibilityHint("Opens details")
             }
@@ -251,6 +252,14 @@ struct PosterNavCard: View {
             }
             .frame(maxWidth: width ?? .infinity, alignment: .leading)
         }
+    }
+
+    /// An episode's poster opens the episode: its show's page, from the
+    /// long-press menu. Only where the section can open a page by its id.
+    private var goToShow: (() -> Void)? {
+        guard item.isEpisode, let show = item.seriesId, !navigator.section.isEmpty else { return nil }
+        let navigator = navigator
+        return { navigator.showItem(show) }
     }
 }
 

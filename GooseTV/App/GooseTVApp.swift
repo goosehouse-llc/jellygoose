@@ -1277,7 +1277,7 @@ struct MainTabView: View {
         case .home:
             // Back on Home steps outward: pop a pushed screen, then jump to the
             // top, then open the menu. From the open menu it leaves the app.
-            if !homePath.isEmpty { return { pop(&homePath) } }
+            if !homePath.isEmpty { return popping($homePath) }
             if menuFocused { return nil }
             // Whether Home is below its top is asked when back is pressed:
             // kept here as state, every move between the top row and the
@@ -1290,23 +1290,23 @@ struct MainTabView: View {
                 }
             }
         case .library(let id):
-            return librariesPath.isEmpty ? stepOut(of: grids.existing(id)) : { pop(&librariesPath) }
+            return librariesPath.isEmpty ? stepOut(of: grids.existing(id)) : popping($librariesPath)
         case .pinned(let id):
-            return librariesPath.isEmpty ? stepOut(of: grids.existing(id.uuidString)) : { pop(&librariesPath) }
+            return librariesPath.isEmpty ? stepOut(of: grids.existing(id.uuidString)) : popping($librariesPath)
         case .librariesOverview:
-            return librariesPath.isEmpty ? stepOut() : { pop(&librariesPath) }
+            return librariesPath.isEmpty ? stepOut() : popping($librariesPath)
         case .favorites:
-            return favoritesPath.isEmpty ? stepOut() : { pop(&favoritesPath) }
+            return favoritesPath.isEmpty ? stepOut() : popping($favoritesPath)
         case .watchlist:
-            return watchlistPath.isEmpty ? stepOut() : { pop(&watchlistPath) }
+            return watchlistPath.isEmpty ? stepOut() : popping($watchlistPath)
         case .collections:
-            return collectionsPath.isEmpty ? stepOut() : { pop(&collectionsPath) }
+            return collectionsPath.isEmpty ? stepOut() : popping($collectionsPath)
         case .search:
-            return searchPath.isEmpty ? stepOut() : { pop(&searchPath) }
+            return searchPath.isEmpty ? stepOut() : popping($searchPath)
         case .requests:
-            return requestsPath.isEmpty ? stepOut() : { pop(&requestsPath) }
+            return requestsPath.isEmpty ? stepOut() : popping($requestsPath)
         case .settings:
-            return settingsPath.isEmpty ? stepOut() : { pop(&settingsPath) }
+            return settingsPath.isEmpty ? stepOut() : popping($settingsPath)
         case .liveTV:
             #if os(tvOS)
             // The guide's top first, as a library's is: the first channel
@@ -1343,6 +1343,14 @@ struct MainTabView: View {
             #endif
             menuFocusRequest = sidebarTarget
         }
+    }
+
+    /// Back on a pushed screen. One screen down, it's ours to pop. Further
+    /// down, the system's navigation stack pops it itself, as the remote's
+    /// Back reaches it as well: popping here too went back two screens (an
+    /// actor's page, from a film's, back to Home).
+    private func popping(_ path: Binding<NavigationPath>) -> (() -> Void)? {
+        path.wrappedValue.count > 1 ? nil : { pop(&path.wrappedValue) }
     }
 
     /// Back swaps the focused screen away, so keep the fallback out of the menu.
