@@ -403,13 +403,28 @@ final class LibraryGridModels {
 /// A grid with a model of its own, for grids pushed inside a section (a Home
 /// shelf's "See all", a collection). Section roots use LibraryGrid directly.
 struct LibraryGridView: View {
-    let library: BaseItem
+    @Environment(\.appState) private var app
+    let opened: BaseItem
     @StateObject private var model = LibraryGridModel()
+    /// A playlist whose server didn't say what it holds, once told by
+    /// what's in it.
+    @State private var told: BaseItem?
+
+    init(library: BaseItem) { opened = library }
+
+    private var library: BaseItem { told ?? opened }
 
     var body: some View {
         // Music opens as music: a library by its albums, artists and songs, an
         // album or a playlist of songs as a list of them, an artist as theirs.
-        if library.holdsMusic {
+        if opened.type == "Playlist", opened.knownMediaType == nil, told == nil {
+            // Opened as films, a playlist of songs showed nothing.
+            ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
+                .focusable()
+                .task {
+                    told = await app?.client?.withPlaylistTypes([opened]).first ?? opened
+                }
+        } else if library.holdsMusic {
             MusicLibraryView(library: library)
         } else if library.holdsBooks {
             AudiobookLibraryView(library: library)
@@ -2475,13 +2490,13 @@ struct CollectionsView: View {
         .sectionNavigation(path: $path, section: "collections")
         .task {
             guard !loaded, let client = app.client else { return }
-            collections = (try? await client.collections()) ?? []
+            collections = (try? await client.videoCollections()) ?? []
             loaded = true
         }
         // Made or deleted from a long press, anywhere.
         .onReceive(NotificationCenter.default.publisher(for: .songPlaylistsChanged)) { _ in
             Task {
-                guard let client = app.client, let found = try? await client.collections() else { return }
+                guard let client = app.client, let found = try? await client.videoCollections() else { return }
                 app.holdMenuFocus()
                 collections = found
             }

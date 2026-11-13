@@ -502,7 +502,8 @@ final class AppState: ObservableObject {
     }
 
     private func refreshCollections() async {
-        guard let client, let found = try? await client.collections(limit: 1), client === self.client else { return }
+        // Playlists of songs are music's, not a reason for the row.
+        guard let client, let found = try? await client.videoCollections(), client === self.client else { return }
         if hasCollections == found.isEmpty { hasCollections = !found.isEmpty }
         let manages = await client.canManageCollections()
         if client === self.client, manages != managesCollections { managesCollections = manages }

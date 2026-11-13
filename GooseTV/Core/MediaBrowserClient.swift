@@ -371,7 +371,32 @@ final class MediaBrowserClient: MediaServer {
             // What each holds, for its tile.
             "Fields": "ChildCount",
         ]))
-        return result.items
+        return await withPlaylistTypes(result.items)
+    }
+
+    /// Playlists whose server didn't say what they hold, told by the first
+    /// thing in each: a playlist of songs left unsaid opened as a grid of
+    /// films and episodes, and showed nothing.
+    func withPlaylistTypes(_ items: [BaseItem]) async -> [BaseItem] {
+        let unsaid = items.filter { $0.type == "Playlist" && $0.knownMediaType == nil }
+        guard !unsaid.isEmpty, let uid = try? requireUser() else { return items }
+        var told: [String: String] = [:]
+        await withTaskGroup(of: (String, String?).self) { group in
+            for list in unsaid {
+                group.addTask { [self] in
+                    let first: ItemsResult? = try? await get("Playlists/\(list.id)/Items",
+                                                             query: listQuery(["UserId": uid, "Limit": "1", "EnableImages": "false"]))
+                    return (list.id, first?.items.first?.mediaType)
+                }
+            }
+            for await (id, type) in group { if let type { told[id] = type } }
+        }
+        return items.map { item in
+            guard let type = told[item.id] else { return item }
+            var item = item
+            item.mediaType = type
+            return item
+        }
     }
 
     /// Everything playable in a show, a collection or a playlist, for Play All
@@ -2226,7 +2251,7 @@ final class MediaBrowserClient: MediaServer {
         ]))
         // An empty one made elsewhere may not say what it holds: it's a
         // playlist of films as much as of songs.
-        return result.items.filter { ($0.mediaType ?? mediaType) == mediaType }
+        return await withPlaylistTypes(result.items).filter { ($0.knownMediaType ?? mediaType) == mediaType }
     }
 
     private struct Created: Decodable { let id: String }

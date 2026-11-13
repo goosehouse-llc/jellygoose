@@ -74,7 +74,11 @@ protocol MediaServer: AnyObject {
     /// library.
     func watchlist(limit: Int) async throws -> [BaseItem]
     /// Collections and playlists, which hold items rather than being one.
+    /// Each playlist says what it holds (see `withPlaylistTypes`).
     func collections(limit: Int) async throws -> [BaseItem]
+    /// The same items, each playlist the server left unsaid told by what's
+    /// in it.
+    func withPlaylistTypes(_ items: [BaseItem]) async -> [BaseItem]
     func items(fromStudio studioId: String, limit: Int) async throws -> [BaseItem]
     func playQueue(for container: BaseItem, shuffled: Bool, limit: Int) async throws -> [BaseItem]
     func latest(in libraryId: String, limit: Int, types: String?) async throws -> [BaseItem]
@@ -431,6 +435,11 @@ extension MediaServer {
     func favorites() async throws -> [BaseItem] { try await favorites(limit: 200) }
     func watchlist() async throws -> [BaseItem] { try await watchlist(limit: 200) }
     func collections() async throws -> [BaseItem] { try await collections(limit: 200) }
+    /// The Collections section's: collections and playlists of films and
+    /// episodes. Playlists of songs are music's, under its Playlists.
+    func videoCollections() async throws -> [BaseItem] {
+        try await collections(limit: 200).filter { !$0.isSongPlaylist }
+    }
     func reportProgress(_ ctx: PlaybackContext, positionTicks: Int64, paused: Bool) async {
         await reportProgress(ctx, positionTicks: positionTicks, paused: paused, audioIndex: nil, subtitleIndex: nil)
     }
