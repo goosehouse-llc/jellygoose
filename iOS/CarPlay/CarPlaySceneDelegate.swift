@@ -126,7 +126,7 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
             // Favourites and Collections only when there's something in them,
             // as in the app's own menu.
             async let favourite = try? session.client.favorites(limit: 1)
-            async let collected = try? session.client.collections(limit: 1)
+            async let collected = try? session.client.videoCollections()
             // Music has a tab of its own.
             let all = await views ?? []
             loadMusic(all.filter(\.holdsMusic), from: session.client)
@@ -225,7 +225,7 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
     /// The server's collections and playlists; each opens to what's in it.
     private func openCollections() async {
         guard let client else { return }
-        let collections = (try? await client.collections()) ?? []
+        let collections = (try? await client.videoCollections()) ?? []
         let list = CPListTemplate(title: String(localized: "Collections"), sections: [])
         fill(list, with: collections) { [weak self] collection in
             guard let self else { return nil }

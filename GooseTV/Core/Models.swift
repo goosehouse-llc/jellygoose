@@ -225,8 +225,10 @@ struct BaseItem: Decodable, Identifiable, Hashable {
     let albumPrimaryImageTag: String?
     /// Whether the server holds the song's words (an .lrc beside it, or in its tags).
     let hasLyrics: Bool?
-    /// "Audio", "Video": what a playlist holds, as the server sees it.
-    let mediaType: String?
+    /// "Audio", "Video": what a playlist holds, as the server sees it. Not
+    /// every server says so of a playlist (see `knownMediaType`); the client
+    /// fills it in from what's in it.
+    var mediaType: String?
     /// The file's container, as the server names it ("flac", "mov,mp4,m4a,…").
     let container: String?
     /// A song's place in a playlist, as moving or removing it names it. Only
@@ -284,6 +286,10 @@ struct BaseItem: Decodable, Identifiable, Hashable {
     /// A playlist of songs, which opens as an album does and plays in the
     /// music player, not the film player.
     var isSongPlaylist: Bool { type == "Playlist" && mediaType == "Audio" }
+    /// What a playlist holds, where the server has said: nil for one it
+    /// leaves unsaid ("Unknown", or nothing), which some servers do of a
+    /// playlist of songs.
+    var knownMediaType: String? { mediaType == "Audio" || mediaType == "Video" ? mediaType : nil }
     /// Anything the music player plays, or is opened as music.
     var isMusic: Bool { isSong || isAlbum || isArtist || isSongPlaylist }
     /// A library of music.
