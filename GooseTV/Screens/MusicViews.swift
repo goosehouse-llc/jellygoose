@@ -932,6 +932,8 @@ struct AlbumView: View {
     @State private var panel: Panel?
     @State private var deleting = false
     @State private var problem: String?
+    /// Why the songs couldn't be fetched, while they couldn't.
+    @State private var failure: String?
     /// The name given it here, since it was fetched.
     @State private var renamed: String?
     #if !os(tvOS)
@@ -977,6 +979,12 @@ struct AlbumView: View {
         false
         #endif
     }
+
+    #if os(tvOS)
+    private let failureSize: CGFloat = 26
+    #else
+    private let failureSize: CGFloat = 18
+    #endif
 
     private var isMoving: Bool {
         #if os(tvOS)
@@ -1128,7 +1136,8 @@ struct AlbumView: View {
         var parts: [String] = []
         if !isPlaylist, let year = shown?.productionYear { parts.append(String(year)) }
         if let genre = shown?.genres?.first { parts.append(genre) }
-        if loaded {
+        // Not counted while the songs couldn't be fetched: there may be many.
+        if loaded, failure == nil {
             let songs = String(localized: "\(tracks.count) songs", comment: "How many songs a music library has")
             let seconds = tracks.compactMap(\.runTimeTicks).reduce(0, +) / 10_000_000
             if tracks.isEmpty {
@@ -1213,6 +1222,28 @@ struct AlbumView: View {
     private var trackList: some View {
         if !loaded {
             ProgressView().frame(maxWidth: .infinity, minHeight: 200)
+        } else if let failure {
+            VStack(alignment: .leading, spacing: 12) {
+                Text(String(localized: "Couldn't load this from the server.",
+                            comment: "Shown where a page or a setting couldn't be fetched, above a Try Again button"))
+                    .font(.app(failureSize, .semibold))
+                Text(verbatim: failure)
+                    .font(.app(failureSize * 0.7))
+                    .foregroundStyle(Theme.textSecondary)
+                    #if !os(tvOS)
+                    .textSelection(.enabled)
+                    #endif
+                Button(String(localized: "Try Again")) {
+                    app.holdMenuFocus()
+                    self.failure = nil
+                    loaded = false
+                    Task { await load() }
+                }
+                .buttonStyle(.pill(selected: true))
+                .padding(.top, 6)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.top, 20)
         } else if rows.isEmpty, isPlaylist {
             Text("Nothing in this playlist yet. Songs go in from their long-press menu: Add to Playlist.",
                  comment: "An empty playlist of songs")
@@ -1311,14 +1342,43 @@ struct AlbumView: View {
         let playlist = item?.type == "Playlist"
         async let full: BaseItem? = fetched == nil ? (try? await client.item(id: albumId)) : fetched
         async let permitted = playlist ? client.canEditPlaylist(albumId) : false
-        let found = (try? await client.tracks(of: albumId, playlist: playlist)) ?? []
+        let found: [BaseItem]?
+        do {
+            found = try await client.tracks(of: albumId, playlist: playlist)
+        } catch {
+            found = nil
+            // Said on the page, not shown as an empty list: what went wrong is
+            // what a report of "no songs" needs. Asked again over songs already
+            // shown (a change made elsewhere), those stay.
+            if !Task.isCancelled, rows.isEmpty { failure = Self.reason(error) }
+        }
         let fresh = await full
         album = fresh ?? item
-        MusicFavorites.shared.heard(found + [fresh].compactMap { $0 }, askedAt: askedAt)
-        if loaded { app.holdMenuFocus() }
-        rows = found.filter(\.isSong).map { PlaylistRow(song: $0) }
+        if let found {
+            failure = nil
+            MusicFavorites.shared.heard(found + [fresh].compactMap { $0 }, askedAt: askedAt)
+            if loaded { app.holdMenuFocus() }
+            rows = found.filter(\.isSong).map { PlaylistRow(song: $0) }
+        }
         loaded = true
         editable = await permitted
+    }
+
+    /// Why the songs couldn't be had, in a line. A song the app can't read
+    /// names the field, which is what a screenshot of it needs to carry.
+    private static func reason(_ error: Error) -> String {
+        guard let decoding = error as? DecodingError else { return error.localizedDescription }
+        func path(_ keys: [CodingKey]) -> String {
+            keys.map { $0.intValue.map(String.init) ?? $0.stringValue }.joined(separator: ".")
+        }
+        switch decoding {
+        case .typeMismatch(_, let context), .valueNotFound(_, let context), .dataCorrupted(let context):
+            return path(context.codingPath) + ": " + context.debugDescription
+        case .keyNotFound(let key, let context):
+            return path(context.codingPath + [key]) + ": " + context.debugDescription
+        @unknown default:
+            return error.localizedDescription
+        }
     }
 
     private func play(from place: Int, shuffled: Bool) {
