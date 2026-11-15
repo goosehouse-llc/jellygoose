@@ -18,7 +18,7 @@ enum WhatsNew {
     /// only, whether or not the version before it was opened.
     static var version: String {
         let bundled = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? ""
-        let fixes = ["1.7.1": "1.7", "1.8.1": "1.8", "2.0.1": "2.0", "2.0.2": "2.0"]
+        let fixes = ["1.7.1": "1.7", "1.8.1": "1.8", "2.0.1": "2.0", "2.0.2": "2.0", "2.0.3": "2.0"]
         return fixes[bundled] ?? bundled
     }
 

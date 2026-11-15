@@ -35,14 +35,14 @@ settings:
     # The version people see and the build number App Store Connect counts. Set
     # here rather than per target because an extension whose version differs from
     # its app is rejected on upload. Bump CURRENT_PROJECT_VERSION every upload.
-    MARKETING_VERSION: "2.0.2"
+    MARKETING_VERSION: "2.0.3"
     # What a new Xcode project turns on and XcodeGen doesn't: without these
     # the compiler doesn't report String(localized:) and friends, and an
     # export of the string catalog finds almost nothing.
     SWIFT_EMIT_LOC_STRINGS: YES
     LOCALIZATION_PREFERS_STRING_CATALOGS: YES
     LOCALIZED_STRING_SWIFTUI_SUPPORT: YES
-    CURRENT_PROJECT_VERSION: "109"
+    CURRENT_PROJECT_VERSION: "110"
 targets:
   GooseTV:
     type: application
