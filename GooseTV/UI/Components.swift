@@ -1442,3 +1442,46 @@ struct GooseWordmark: View {
         .accessibilityLabel("JellyGoose")
     }
 }
+
+/// Views in a line, carried onto the next where they don't fit: a season's
+/// badges, and the Mac's library filter chips.
+struct FlowRow: Layout {
+    var spacing: CGFloat
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let rows = rows(of: subviews, width: proposal.width ?? .infinity)
+        let width = rows.map { $0.reduce(0) { $0 + $1.width } + spacing * CGFloat(max(0, $0.count - 1)) }.max() ?? 0
+        let height = rows.map { $0.map(\.height).max() ?? 0 }.reduce(0, +) + spacing * CGFloat(max(0, rows.count - 1))
+        return CGSize(width: width, height: height)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        var y = bounds.minY
+        var index = 0
+        for row in rows(of: subviews, width: bounds.width) {
+            var x = bounds.minX
+            let height = row.map(\.height).max() ?? 0
+            for size in row {
+                subviews[index].place(at: CGPoint(x: x, y: y + (height - size.height) / 2), proposal: ProposedViewSize(size))
+                x += size.width + spacing
+                index += 1
+            }
+            y += height + spacing
+        }
+    }
+
+    private func rows(of subviews: Subviews, width: CGFloat) -> [[CGSize]] {
+        var rows: [[CGSize]] = [[]]
+        var used: CGFloat = 0
+        for subview in subviews {
+            let size = subview.sizeThatFits(.unspecified)
+            if !rows[rows.count - 1].isEmpty, used + spacing + size.width > width {
+                rows.append([])
+                used = 0
+            }
+            used += (rows[rows.count - 1].isEmpty ? 0 : spacing) + size.width
+            rows[rows.count - 1].append(size)
+        }
+        return rows
+    }
+}
