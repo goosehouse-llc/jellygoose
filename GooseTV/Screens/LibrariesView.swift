@@ -852,207 +852,219 @@ struct LibraryGrid: View {
     }
 
     private var filterBar: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 16) {
-                // Shows being chosen: done, none, or as they were.
-                if let choice = state.showChoice {
-                    Button {
-                        finishChoosingShows(keep: true)
-                    } label: {
-                        FilterChipLabel(icon: "checkmark", text: String(localized: "Done"))
-                    }
-                    .buttonStyle(.chip(active: true))
-                    if !choice.shows.isEmpty {
-                        Button {
-                            state.showChoice?.shows = [:]
-                        } label: {
-                            FilterChipLabel(icon: "circle", text: String(localized: "Choose None", comment: "Chip while shows are being chosen for a TV library's filters: unticks every show"))
-                        }
-                        .buttonStyle(.chip(active: false))
-                    }
-                    Button {
-                        finishChoosingShows(keep: false)
-                    } label: {
-                        FilterChipLabel(icon: "xmark", text: String(localized: "Cancel"))
-                    }
-                    .buttonStyle(.chip(active: false))
-                } else
-                // The server's recordings, chosen several at a time to be
-                // deleted: nothing else in the bar while that's going on.
-                if deletable, selecting {
-                    Button {
-                        confirmingDelete = true
-                    } label: {
-                        FilterChipLabel(icon: "trash", text: chosen.count > 1
-                            ? String(localized: "Delete \(chosen.count) Recordings", comment: "Deletes the chosen recordings from the server; the placeholder is how many")
-                            : chosen.count == 1 ? String(localized: "Delete Recording", comment: "Deletes a recording from the server: its file is removed")
-                            : String(localized: "Delete", comment: "Chip in a library of recordings: deletes the ones chosen; nothing is chosen yet"))
-                    }
-                    .buttonStyle(.chip(active: !chosen.isEmpty))
-                    .disabled(chosen.isEmpty)
-                    Button {
-                        chosen = Set(state.items.filter(\.isOneVideo).map(\.id))
-                    } label: {
-                        FilterChipLabel(icon: "checkmark.circle", text: String(localized: "Select All"))
-                    }
-                    .buttonStyle(.chip(active: false))
-                    Button {
-                        stopSelecting()
-                    } label: {
-                        FilterChipLabel(icon: "xmark", text: String(localized: "Done"))
-                    }
-                    .buttonStyle(.chip(active: false))
-                } else {
-                if deletable, state.items.contains(where: \.isOneVideo) {
-                    Button {
-                        selecting = true
-                    } label: {
-                        FilterChipLabel(icon: "checkmark.circle", text: String(localized: "Select", comment: "Chip in a library of recordings: starts choosing several of them, to delete"))
-                    }
-                    .buttonStyle(.chip(active: false))
-                }
-
-                // A collection or playlist plays as a whole, in order or not.
-                if library.isContainer {
-                    Button {
-                        Task { await playAll(shuffled: false) }
-                    } label: {
-                        FilterChipLabel(icon: "play.fill", text: String(localized: "Play All"))
-                    }
-                    .buttonStyle(.chip(active: true))
-                    Button {
-                        Task { await playAll(shuffled: true) }
-                    } label: {
-                        FilterChipLabel(icon: "shuffle", text: String(localized: "Shuffle"))
-                    }
-                    .buttonStyle(.chip(active: false))
-                }
-
-                if state.filters != LibraryFilters() {
-                    Button {
-                        state.filters = LibraryFilters()
-                    } label: {
-                        FilterChipLabel(icon: "xmark", text: String(localized: "Clear", comment: "Removes all library filters"))
-                    }
-                    .buttonStyle(.chip(active: false))
-                }
-
-                Menu {
-                    Picker("Sort by", selection: sortChoice) {
-                        ForEach(LibrarySort.allCases) { Text($0.label).tag($0) }
-                    }
-                    .pickerStyle(.inline)
-                    if state.filters.sort != .random {
-                        Divider()
-                        Picker(String(localized: "Order", comment: "Heading in the sort menu: which way round the sort goes"),
-                               selection: $model.state.filters.reversed) {
-                            Text(state.filters.sort.order(reversed: false)).tag(false)
-                            Text(state.filters.sort.order(reversed: true)).tag(true)
-                        }
-                        .pickerStyle(.inline)
-                    }
-                } label: {
-                    FilterChipLabel(icon: "arrow.up.arrow.down", text: sortChipText, menu: true)
-                }
-                // A menu's own label went unread by VoiceOver.
-                .accessibilityLabel(sortChipText)
-                .buttonStyle(.chip(active: state.filters.sort != .title || state.filters.reversed))
-
-                // Several at once, so each choice leaves the menu open.
-                if !state.genres.isEmpty {
-                    Menu {
-                        Toggle("All genres", isOn: allChosen(\.genres))
-                        Divider()
-                        ForEach(state.genres, id: \.self) { genre in
-                            Toggle(genre, isOn: chosen(genre, in: \.genres))
-                        }
-                    } label: {
-                        FilterChipLabel(icon: "theatermasks.fill", text: genreChipText, menu: true)
-                    }
-                    .accessibilityLabel(genreChipText)
-                    #if !os(macOS)
-                    .menuActionDismissBehavior(.disabled)
-                    #endif
-                    .buttonStyle(.chip(active: !state.filters.genres.isEmpty))
-                }
-
-                if state.decades.count > 1 {
-                    Menu {
-                        Toggle("All years", isOn: allChosen(\.decades))
-                        Divider()
-                        ForEach(state.decades, id: \.self) { decade in
-                            Toggle(LibraryFilters.decadeName(decade), isOn: chosen(decade, in: \.decades))
-                        }
-                    } label: {
-                        FilterChipLabel(icon: "calendar", text: decadeChipText, menu: true)
-                    }
-                    .accessibilityLabel(decadeChipText)
-                    #if !os(macOS)
-                    .menuActionDismissBehavior(.disabled)
-                    #endif
-                    .buttonStyle(.chip(active: !state.filters.decades.isEmpty))
-                }
-
-                if library.collectionType == "tvshows" {
-                    // Some shows and no others: chosen in the grid, a poster at a time.
-                    Button {
-                        chooseShows()
-                    } label: {
-                        FilterChipLabel(icon: state.filters.shows.isEmpty ? "tv" : "tv.fill", text: showsChipText)
-                    }
-                    .accessibilityLabel(showsChipText)
-                    .buttonStyle(.chip(active: !state.filters.shows.isEmpty))
-
-                    Button {
-                        state.filters.episodes.toggle()
-                    } label: {
-                        FilterChipLabel(icon: state.filters.episodes ? "play.rectangle.fill" : "play.rectangle",
-                                        text: String(localized: "Episodes"))
-                    }
-                    .buttonStyle(.chip(active: state.filters.episodes))
-                }
-
-                Button {
-                    state.filters.unwatched.toggle()
-                } label: {
-                    FilterChipLabel(icon: state.filters.unwatched ? "eye.slash.fill" : "eye.slash", text: String(localized: "Unwatched"))
-                }
-                .buttonStyle(.chip(active: state.filters.unwatched))
-
-                Button {
-                    state.filters.favorites.toggle()
-                } label: {
-                    FilterChipLabel(icon: state.filters.favorites ? "star.fill" : "star", text: String(localized: "Favourites"))
-                }
-                .buttonStyle(.chip(active: state.filters.favorites))
-
-                if state.filters != LibraryFilters() {
-                    let existing = app.pin(for: library, filters: state.filters)
-                    let inMenu = existing?.inMenu == true, onHome = existing?.onHome == true
-                    Button {
-                        app.setPin(library: library, filters: state.filters, inMenu: !inMenu)
-                    } label: {
-                        FilterChipLabel(icon: inMenu ? "pin.fill" : "pin",
-                                        text: inMenu ? String(localized: "Pinned") : String(localized: "Pin to menu"))
-                    }
-                    .buttonStyle(.chip(active: inMenu))
-                    // Or a row of its own on Home.
-                    Button {
-                        app.setPin(library: library, filters: state.filters, onHome: !onHome)
-                    } label: {
-                        FilterChipLabel(icon: onHome ? "house.fill" : "house",
-                                        text: onHome ? String(localized: "On Home", comment: "Library filter bar: these filters are a row on Home")
-                                                     : String(localized: "Add to Home", comment: "Library filter bar: makes these filters a row on Home"))
-                    }
-                    .buttonStyle(.chip(active: onHome))
-                }
-                }
-            }
+        #if os(macOS)
+        // A pointer can't swipe a row sideways, and nothing showed there was
+        // more of it: the chips past the window's edge looked cut off
+        // (issue #16). On a Mac they carry onto another line instead.
+        FlowRow(spacing: 16) { filterChips }
             .padding(.vertical, 14)
             .padding(.horizontal, 4)
+        #else
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 16) { filterChips }
+                .padding(.vertical, 14)
+                .padding(.horizontal, 4)
         }
         // Not under an iPhone Duo's camera strip (see Shelf).
         .scrollClipDisabled(barEdge == nil)
+        #endif
+    }
+
+    @ViewBuilder
+    private var filterChips: some View {
+        // Shows being chosen: done, none, or as they were.
+        if let choice = state.showChoice {
+            Button {
+                finishChoosingShows(keep: true)
+            } label: {
+                FilterChipLabel(icon: "checkmark", text: String(localized: "Done"))
+            }
+            .buttonStyle(.chip(active: true))
+            if !choice.shows.isEmpty {
+                Button {
+                    state.showChoice?.shows = [:]
+                } label: {
+                    FilterChipLabel(icon: "circle", text: String(localized: "Choose None", comment: "Chip while shows are being chosen for a TV library's filters: unticks every show"))
+                }
+                .buttonStyle(.chip(active: false))
+            }
+            Button {
+                finishChoosingShows(keep: false)
+            } label: {
+                FilterChipLabel(icon: "xmark", text: String(localized: "Cancel"))
+            }
+            .buttonStyle(.chip(active: false))
+        } else
+        // The server's recordings, chosen several at a time to be
+        // deleted: nothing else in the bar while that's going on.
+        if deletable, selecting {
+            Button {
+                confirmingDelete = true
+            } label: {
+                FilterChipLabel(icon: "trash", text: chosen.count > 1
+                    ? String(localized: "Delete \(chosen.count) Recordings", comment: "Deletes the chosen recordings from the server; the placeholder is how many")
+                    : chosen.count == 1 ? String(localized: "Delete Recording", comment: "Deletes a recording from the server: its file is removed")
+                    : String(localized: "Delete", comment: "Chip in a library of recordings: deletes the ones chosen; nothing is chosen yet"))
+            }
+            .buttonStyle(.chip(active: !chosen.isEmpty))
+            .disabled(chosen.isEmpty)
+            Button {
+                chosen = Set(state.items.filter(\.isOneVideo).map(\.id))
+            } label: {
+                FilterChipLabel(icon: "checkmark.circle", text: String(localized: "Select All"))
+            }
+            .buttonStyle(.chip(active: false))
+            Button {
+                stopSelecting()
+            } label: {
+                FilterChipLabel(icon: "xmark", text: String(localized: "Done"))
+            }
+            .buttonStyle(.chip(active: false))
+        } else {
+        if deletable, state.items.contains(where: \.isOneVideo) {
+            Button {
+                selecting = true
+            } label: {
+                FilterChipLabel(icon: "checkmark.circle", text: String(localized: "Select", comment: "Chip in a library of recordings: starts choosing several of them, to delete"))
+            }
+            .buttonStyle(.chip(active: false))
+        }
+
+        // A collection or playlist plays as a whole, in order or not.
+        if library.isContainer {
+            Button {
+                Task { await playAll(shuffled: false) }
+            } label: {
+                FilterChipLabel(icon: "play.fill", text: String(localized: "Play All"))
+            }
+            .buttonStyle(.chip(active: true))
+            Button {
+                Task { await playAll(shuffled: true) }
+            } label: {
+                FilterChipLabel(icon: "shuffle", text: String(localized: "Shuffle"))
+            }
+            .buttonStyle(.chip(active: false))
+        }
+
+        if state.filters != LibraryFilters() {
+            Button {
+                state.filters = LibraryFilters()
+            } label: {
+                FilterChipLabel(icon: "xmark", text: String(localized: "Clear", comment: "Removes all library filters"))
+            }
+            .buttonStyle(.chip(active: false))
+        }
+
+        Menu {
+            Picker("Sort by", selection: sortChoice) {
+                ForEach(LibrarySort.allCases) { Text($0.label).tag($0) }
+            }
+            .pickerStyle(.inline)
+            if state.filters.sort != .random {
+                Divider()
+                Picker(String(localized: "Order", comment: "Heading in the sort menu: which way round the sort goes"),
+                       selection: $model.state.filters.reversed) {
+                    Text(state.filters.sort.order(reversed: false)).tag(false)
+                    Text(state.filters.sort.order(reversed: true)).tag(true)
+                }
+                .pickerStyle(.inline)
+            }
+        } label: {
+            FilterChipLabel(icon: "arrow.up.arrow.down", text: sortChipText, menu: true)
+        }
+        // A menu's own label went unread by VoiceOver.
+        .accessibilityLabel(sortChipText)
+        .buttonStyle(.chip(active: state.filters.sort != .title || state.filters.reversed))
+
+        // Several at once, so each choice leaves the menu open.
+        if !state.genres.isEmpty {
+            Menu {
+                Toggle("All genres", isOn: allChosen(\.genres))
+                Divider()
+                ForEach(state.genres, id: \.self) { genre in
+                    Toggle(genre, isOn: chosen(genre, in: \.genres))
+                }
+            } label: {
+                FilterChipLabel(icon: "theatermasks.fill", text: genreChipText, menu: true)
+            }
+            .accessibilityLabel(genreChipText)
+            #if !os(macOS)
+            .menuActionDismissBehavior(.disabled)
+            #endif
+            .buttonStyle(.chip(active: !state.filters.genres.isEmpty))
+        }
+
+        if state.decades.count > 1 {
+            Menu {
+                Toggle("All years", isOn: allChosen(\.decades))
+                Divider()
+                ForEach(state.decades, id: \.self) { decade in
+                    Toggle(LibraryFilters.decadeName(decade), isOn: chosen(decade, in: \.decades))
+                }
+            } label: {
+                FilterChipLabel(icon: "calendar", text: decadeChipText, menu: true)
+            }
+            .accessibilityLabel(decadeChipText)
+            #if !os(macOS)
+            .menuActionDismissBehavior(.disabled)
+            #endif
+            .buttonStyle(.chip(active: !state.filters.decades.isEmpty))
+        }
+
+        if library.collectionType == "tvshows" {
+            // Some shows and no others: chosen in the grid, a poster at a time.
+            Button {
+                chooseShows()
+            } label: {
+                FilterChipLabel(icon: state.filters.shows.isEmpty ? "tv" : "tv.fill", text: showsChipText)
+            }
+            .accessibilityLabel(showsChipText)
+            .buttonStyle(.chip(active: !state.filters.shows.isEmpty))
+
+            Button {
+                state.filters.episodes.toggle()
+            } label: {
+                FilterChipLabel(icon: state.filters.episodes ? "play.rectangle.fill" : "play.rectangle",
+                                text: String(localized: "Episodes"))
+            }
+            .buttonStyle(.chip(active: state.filters.episodes))
+        }
+
+        Button {
+            state.filters.unwatched.toggle()
+        } label: {
+            FilterChipLabel(icon: state.filters.unwatched ? "eye.slash.fill" : "eye.slash", text: String(localized: "Unwatched"))
+        }
+        .buttonStyle(.chip(active: state.filters.unwatched))
+
+        Button {
+            state.filters.favorites.toggle()
+        } label: {
+            FilterChipLabel(icon: state.filters.favorites ? "star.fill" : "star", text: String(localized: "Favourites"))
+        }
+        .buttonStyle(.chip(active: state.filters.favorites))
+
+        if state.filters != LibraryFilters() {
+            let existing = app.pin(for: library, filters: state.filters)
+            let inMenu = existing?.inMenu == true, onHome = existing?.onHome == true
+            Button {
+                app.setPin(library: library, filters: state.filters, inMenu: !inMenu)
+            } label: {
+                FilterChipLabel(icon: inMenu ? "pin.fill" : "pin",
+                                text: inMenu ? String(localized: "Pinned") : String(localized: "Pin to menu"))
+            }
+            .buttonStyle(.chip(active: inMenu))
+            // Or a row of its own on Home.
+            Button {
+                app.setPin(library: library, filters: state.filters, onHome: !onHome)
+            } label: {
+                FilterChipLabel(icon: onHome ? "house.fill" : "house",
+                                text: onHome ? String(localized: "On Home", comment: "Library filter bar: these filters are a row on Home")
+                                             : String(localized: "Add to Home", comment: "Library filter bar: makes these filters a row on Home"))
+            }
+            .buttonStyle(.chip(active: onHome))
+        }
+        }
     }
 
     // MARK: Choosing recordings to delete
