@@ -135,8 +135,15 @@ Signing/      entitlements for the app and the extension
   Jellyfin servers run plain HTTP and the app has no fixed domain. The reasoning given
   to App Review is in `AppStore/review-notes.md`.
 - The access token is kept in a keychain group shared with the Top Shelf extension.
-- The code also connects to Emby servers, but that has only been tried against a
-  mock, so neither the app nor the listing advertises it yet.
+- Emby servers are supported: sign-in, Home, libraries, title pages, playback and
+  resume have been tested against Emby 4.10. A few features rest on parts of Jellyfin
+  that Emby doesn't have, and don't appear on an Emby server: Quick Connect (signing
+  in by code, and the password-free sign-in to Seerr), Play on TV, Watch Together
+  (Jellyfin's SyncPlay), skipping intros and credits that the server has marked as
+  segments (Jellyfin 10.10 and later), song lyrics, watching a recording from its
+  start while it's still being made, and the Dashboard and Plugins pages for server
+  administrators. Look for `flavor == .jellyfin` and `supportsQuickConnect` in the
+  code to find them.
 
 ## License
 
