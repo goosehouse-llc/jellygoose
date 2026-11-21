@@ -1118,7 +1118,7 @@ struct Shelf<Content: View>: View {
         VStack(alignment: .leading, spacing: 10) {
             ShelfHeader(title: title, eyebrow: eyebrow, accent: accent ?? theme.colors.palette[0], seeAll: seeAll)
                 .padding(.horizontal, 4)
-            ScrollView(.horizontal, showsIndicators: false) {
+            SideScroll {
                 LazyHStack(alignment: .top, spacing: 32) {
                     content
                 }
@@ -1129,6 +1129,94 @@ struct Shelf<Content: View>: View {
         }
     }
 }
+
+/// A row that scrolls sideways. On a Mac a mouse can't swipe it, and nothing
+/// showed there was more of it (issue #16), so while the pointer is over it,
+/// arrows at its ends move it along most of a width at a time. Everywhere
+/// else it's a plain sideways scroll view: a finger or the remote moves it.
+struct SideScroll<Content: View>: View {
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        #if os(macOS)
+        MacSideScroll(content: content)
+        #else
+        ScrollView(.horizontal, showsIndicators: false) { content }
+        #endif
+    }
+}
+
+#if os(macOS)
+private struct MacSideScroll<Content: View>: View {
+    let content: Content
+
+    /// Where the row is, in its content's own terms.
+    private struct Place: Equatable {
+        var start: CGFloat = 0
+        var width: CGFloat = 0
+        var contentWidth: CGFloat = 0
+        var atStart: Bool { start <= 1 }
+        var atEnd: Bool { start + width >= contentWidth - 1 }
+    }
+
+    @State private var position = ScrollPosition(edge: .leading)
+    @State private var place = Place()
+    @State private var hovering = false
+
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) { content }
+            .scrollPosition($position)
+            .onScrollGeometryChange(for: Place.self) { geometry in
+                Place(start: geometry.visibleRect.minX, width: geometry.visibleRect.width,
+                      contentWidth: geometry.contentSize.width)
+            } action: { _, now in
+                place = now
+            }
+            .overlay(alignment: .leading) { arrow(forward: false) }
+            .overlay(alignment: .trailing) { arrow(forward: true) }
+            .onHover { inside in
+                withAnimation(.easeOut(duration: 0.15)) { hovering = inside }
+            }
+    }
+
+    /// Debug builds: GOOSETV_MAC_ARROWS=always keeps the arrows up without a pointer
+    /// over the row, for a script (a window behind another app hears no hovering).
+    private var pointedAt: Bool {
+        #if DEBUG
+        if ProcessInfo.processInfo.environment["GOOSETV_MAC_ARROWS"] == "always" { return true }
+        #endif
+        return hovering
+    }
+
+    private func arrow(forward: Bool) -> some View {
+        let shown = pointedAt && !(forward ? place.atEnd : place.atStart)
+        return Button {
+            // Most of a width, so the card cut off at the edge comes in whole
+            // and the one before it stays in sight.
+            let step = place.width * 0.8
+            let furthest = max(0, place.contentWidth - place.width)
+            let target = min(max(0, place.start + (forward ? step : -step)), furthest)
+            withAnimation(.easeInOut(duration: 0.35)) { position.scrollTo(x: target) }
+        } label: {
+            Image(systemName: forward ? "chevron.right" : "chevron.left")
+                .font(.system(size: 18, weight: .bold))
+                .foregroundStyle(.white)
+                .frame(width: 40, height: 40)
+                .background(.black.opacity(0.55), in: Circle())
+                .overlay(Circle().stroke(.white.opacity(0.25), lineWidth: 1))
+                .shadow(color: .black.opacity(0.4), radius: 6, y: 2)
+                .contentShape(Circle())
+        }
+        .buttonStyle(.plain)
+        .padding(.horizontal, 8)
+        .opacity(shown ? 1 : 0)
+        .allowsHitTesting(shown)
+        .accessibilityLabel(forward ? String(localized: "Scroll Right", comment: "Mac: arrow at the end of a row that moves it along")
+                                    : String(localized: "Scroll Left", comment: "Mac: arrow at the start of a row that moves it back"))
+        .accessibilityHidden(!shown)
+    }
+}
+#endif
 
 struct ShelfHeader: View {
     let title: String

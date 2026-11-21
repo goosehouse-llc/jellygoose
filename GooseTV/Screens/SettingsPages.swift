@@ -492,7 +492,7 @@ private struct SettingGroup<Options: View>: View {
             Text(detail)
                 .font(.app(15))
                 .foregroundStyle(Theme.textSecondary)
-            ScrollView(.horizontal, showsIndicators: false) {
+            SideScroll {
                 HStack(spacing: 14) { options }
                     .padding(.vertical, 14)   // room for the focused pill's lift
                     .padding(.horizontal, 6)

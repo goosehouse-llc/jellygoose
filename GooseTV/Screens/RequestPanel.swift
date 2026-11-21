@@ -230,7 +230,7 @@ struct RequestPanel: View {
             Text(name)
                 .font(.app(15, .semibold))
                 .foregroundStyle(Theme.textSecondary)
-            ScrollView(.horizontal, showsIndicators: false) {
+            SideScroll {
                 HStack(spacing: 12) { chips() }
                     .padding(.vertical, 10)   // room for the focused chip's lift
                     .padding(.horizontal, 6)
