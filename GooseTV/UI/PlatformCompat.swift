@@ -46,7 +46,7 @@ extension View {
     @ViewBuilder
     func scrollsSideways(_ when: Bool) -> some View {
         if when {
-            ScrollView(.horizontal, showsIndicators: false) { self }
+            SideScroll { self }
         } else {
             self
         }

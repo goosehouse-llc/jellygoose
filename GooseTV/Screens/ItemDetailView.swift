@@ -575,7 +575,7 @@ struct ItemDetailView: View {
     private var seasonSection: some View {
         VStack(alignment: .leading, spacing: 24) {
             if seasons.count > 1 {
-                ScrollView(.horizontal, showsIndicators: false) {
+                SideScroll {
                     HStack(spacing: 20) {
                         ForEach(seasons) { season in
                             Button {
@@ -1469,7 +1469,7 @@ private extension View {
     @ViewBuilder
     func scrollsSidewaysOnPhone() -> some View {
         #if !os(tvOS)
-        ScrollView(.horizontal, showsIndicators: false) {
+        SideScroll {
             self.padding(.vertical, 4)
         }
         #else

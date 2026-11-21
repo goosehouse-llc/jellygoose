@@ -43,7 +43,7 @@ struct RequestListView: View {
                      : String(localized: "Your Requests", comment: "Shelf of the titles the viewer has asked for"))
                     .font(.app(26, .bold))
 
-                ScrollView(.horizontal, showsIndicators: false) {
+                SideScroll {
                     HStack(spacing: 12) {
                         ForEach(SeerrClient.RequestFilter.allCases, id: \.self) { kind in
                             Button(Self.name(of: kind)) { filter = kind }

@@ -727,7 +727,7 @@ struct LiveSeriesPanel: View {
     private func group<Pills: View>(_ title: String, @ViewBuilder pills: () -> Pills) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title).font(.app(19, .semibold))
-            ScrollView(.horizontal, showsIndicators: false) {
+            SideScroll {
                 HStack(spacing: 14) { pills() }
                     .padding(.vertical, 10)   // room for the focused pill's lift
                     .padding(.horizontal, 6)
@@ -1247,7 +1247,7 @@ struct LiveTVView: View {
                 }
                 .frame(minWidth: metrics.column - CGFloat(24).scaled, alignment: .leading)
             }
-            ScrollView(.horizontal, showsIndicators: false) {
+            SideScroll {
                 HStack(spacing: 10) {
                     Button(String(localized: "All Channels", comment: "Live TV filter: every channel")) { model.choose(.all) }
                         .buttonStyle(.chip(active: model.filter == .all))

@@ -960,7 +960,7 @@ struct PlayerChrome<Engine: PlayerEngine>: View {
             // Wider than the screen even so (an iPad held upright has more
             // buttons than width): it scrolls sideways, rather than pushing
             // Close and the time off either edge.
-            ScrollView(.horizontal, showsIndicators: false) { buttonRow(limit: 14) }
+            SideScroll { buttonRow(limit: 14) }
             #endif
         }
     }

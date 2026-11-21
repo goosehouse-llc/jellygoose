@@ -97,7 +97,7 @@ struct LoginView: View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Who's watching?", comment: "Heading above the profile pictures on the sign-in screen")
                 .font(.app(56, .heavy))
-            ScrollView(.horizontal, showsIndicators: false) {
+            SideScroll {
                 HStack(spacing: 34) {
                     ForEach(Array(accounts.enumerated()), id: \.element.id) { index, account in
                         userTile(name: account.name, imageTag: account.imageTag, userId: account.userId) {

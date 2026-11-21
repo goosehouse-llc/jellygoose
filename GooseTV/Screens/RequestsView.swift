@@ -518,7 +518,7 @@ struct RequestsSettingsView: View {
             Text("Requests wears colours of its own, so it doesn't look like your library.")
                 .font(.app(15))
                 .foregroundStyle(Theme.textSecondary)
-            ScrollView(.horizontal, showsIndicators: false) {
+            SideScroll {
                 HStack(spacing: 12) {
                     choice(String(localized: "Automatic"), .contrasting)
                     choice(String(localized: "Same as the App", comment: "The Requests section keeps the app's own colour scheme"), .same)
