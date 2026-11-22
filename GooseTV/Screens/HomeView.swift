@@ -317,10 +317,7 @@ struct HomeView: View {
                                                   // banners there redrew a screen nobody could see.
                                                   held: heroPaused || heroFocus != nil || playingItem != nil
                                                       || !path.isEmpty) {
-                                        let next = heroItems[(heroIndex + 1) % heroItems.count].id
-                                        withAnimation(.easeInOut(duration: 0.8)) {
-                                            heroPosition = next
-                                        }
+                                        turnHero(by: 1)
                                     }
                                     Button {
                                         heroPaused.toggle()
@@ -335,6 +332,13 @@ struct HomeView: View {
                                 .padding(.bottom, 18)
                             }
                         }
+                        #if os(macOS)
+                        // A mouse can't swipe the banners. They go round, so both
+                        // arrows stay up whichever banner is showing.
+                        .macArrows(back: heroItems.count > 1, onward: heroItems.count > 1) { forward in
+                            turnHero(by: forward ? 1 : -1)
+                        }
+                        #endif
                     }
 
                     // The rows, as arranged in Settings.
@@ -367,6 +371,14 @@ struct HomeView: View {
     #endif
 
     #if !os(tvOS)
+    /// On to another banner, going round at either end.
+    private func turnHero(by step: Int) {
+        let count = heroItems.count
+        guard count > 1 else { return }
+        let next = heroItems[(heroIndex + step + count) % count].id
+        withAnimation(.easeInOut(duration: 0.8)) { heroPosition = next }
+    }
+
     /// Puts the banners back on the one that was showing, after the screen
     /// has changed width: the device turned on its side, or back. Each
     /// banner is as wide as the screen, and the row of them kept its place
