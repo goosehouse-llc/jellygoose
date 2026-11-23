@@ -1161,7 +1161,6 @@ private struct MacSideScroll<Content: View>: View {
 
     @State private var position = ScrollPosition(edge: .leading)
     @State private var place = Place()
-    @State private var hovering = false
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) { content }
@@ -1172,6 +1171,34 @@ private struct MacSideScroll<Content: View>: View {
             } action: { _, now in
                 place = now
             }
+            .macArrows(back: !place.atStart, onward: !place.atEnd) { forward in
+                // Most of a width, so the card cut off at the edge comes in whole
+                // and the one before it stays in sight.
+                let step = place.width * 0.8
+                let furthest = max(0, place.contentWidth - place.width)
+                let target = min(max(0, place.start + (forward ? step : -step)), furthest)
+                withAnimation(.easeInOut(duration: 0.35)) { position.scrollTo(x: target) }
+            }
+    }
+}
+
+extension View {
+    /// Round arrows at this view's sides while the pointer is over it, for what a
+    /// finger would swipe and a mouse can't.
+    func macArrows(back: Bool, onward: Bool, move: @escaping (_ forward: Bool) -> Void) -> some View {
+        modifier(MacArrows(back: back, onward: onward, move: move))
+    }
+}
+
+private struct MacArrows: ViewModifier {
+    let back: Bool
+    let onward: Bool
+    let move: (_ forward: Bool) -> Void
+
+    @State private var hovering = false
+
+    func body(content: Content) -> some View {
+        content
             .overlay(alignment: .leading) { arrow(forward: false) }
             .overlay(alignment: .trailing) { arrow(forward: true) }
             .onHover { inside in
@@ -1189,14 +1216,9 @@ private struct MacSideScroll<Content: View>: View {
     }
 
     private func arrow(forward: Bool) -> some View {
-        let shown = pointedAt && !(forward ? place.atEnd : place.atStart)
+        let shown = pointedAt && (forward ? onward : back)
         return Button {
-            // Most of a width, so the card cut off at the edge comes in whole
-            // and the one before it stays in sight.
-            let step = place.width * 0.8
-            let furthest = max(0, place.contentWidth - place.width)
-            let target = min(max(0, place.start + (forward ? step : -step)), furthest)
-            withAnimation(.easeInOut(duration: 0.35)) { position.scrollTo(x: target) }
+            move(forward)
         } label: {
             Image(systemName: forward ? "chevron.right" : "chevron.left")
                 .font(.system(size: 18, weight: .bold))
