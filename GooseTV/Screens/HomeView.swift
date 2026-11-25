@@ -703,8 +703,8 @@ struct HeroBanner: View {
                                     symbol: "")
                             .frame(width: wide, height: Self.heroHeight)
                             .clipped()
-                            .mask(LinearGradient(stops: [.init(color: whole ? .clear : .black, location: 0),
-                                                         .init(color: .black, location: 0.4)],
+                            .mask(LinearGradient(stops: whole ? Self.pictureFade : [.init(color: .black, location: 0),
+                                                                                    .init(color: .black, location: 1)],
                                                  startPoint: .leading, endPoint: .trailing))
                             .frame(width: box.size.width, height: box.size.height, alignment: whole ? .trailing : .center)
                     }
@@ -769,6 +769,13 @@ struct HeroBanner: View {
         // of a card's menu.
         .contentShape(.interaction, RoundedRectangle(cornerRadius: 24))
         .itemContextMenu(item, showDetails: showDetails)
+    }
+
+    /// The picture's left side coming up from nothing, eased at the start: a straight
+    /// ramp began so abruptly that bright artwork showed a line down the banner there.
+    private static let pictureFade: [Gradient.Stop] = (0...16).map { step in
+        let along = Double(step) / 16
+        return .init(color: .black.opacity(along * along * (3 - 2 * along)), location: along * 0.4)
     }
 
     private var heroTitle: String {
