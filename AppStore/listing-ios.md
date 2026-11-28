@@ -15,7 +15,7 @@ record's own and shared with the Apple TV version; see `listing.md`.
 In [`whats-new-ios-1.4.md`](whats-new-ios-1.4.md). A version that is the
 first on these devices has no What's New.
 
-## Description — 3937 / 4000
+## Description — 3864 / 4000
 
 The Apple TV's 1.4 description with what differs here: the Home is the banner
 one, Downloads is this app's alone, picture in picture and AirPlay have a
@@ -73,7 +73,7 @@ MAKE IT YOURS
 Six colour schemes, one a true black for OLED, six app icons, and Home's rows in the order you choose. In nine languages.
 
 NOTHING PHONES HOME
-No accounts, no subscription, no analytics, no advertising, no third parties. JellyGoose talks to your own servers and nowhere else, apart from asking your own network where they are during setup.
+No accounts, no subscription, no analytics, no advertising, no tracking. JellyGoose talks to your own servers, never to us.
 
 Requires your own Jellyfin server. Also on Apple TV. Not affiliated with or endorsed by the Jellyfin project.
 ```
