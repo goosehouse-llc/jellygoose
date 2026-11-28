@@ -50,7 +50,8 @@ struct RequestDetailView: View {
                     if !shownRequests.isEmpty { requestList }
                     if let client = requests.client {
                         if let cast = details?.cast.prefix(20), !cast.isEmpty {
-                            Shelf(title: String(localized: "Cast"), accent: Theme.palette[3]) {
+                            Shelf(title: String(localized: "Cast"), accent: Theme.palette[3],
+                                  spacing: RequestCard.gap, liftRoom: RequestCard.liftRoom) {
                                 ForEach(cast) { SeerrCastCard(person: $0, client: client) }
                             }
                             // Sections, so a short shelf isn't stepped over.
@@ -58,14 +59,14 @@ struct RequestDetailView: View {
                         }
                         if !recommended.isEmpty {
                             Shelf(title: String(localized: "Recommendations", comment: "Shelf of titles suggested for someone who liked this one"),
-                                  accent: Theme.palette[2]) {
+                                  accent: Theme.palette[2], spacing: RequestCard.gap, liftRoom: RequestCard.liftRoom) {
                                 ForEach(recommended) { SeerrPosterCard(title: $0, client: client, width: RequestCard.posterWidth) }
                             }
                             .tvFocusSection()
                         }
                         if !similar.isEmpty {
                             Shelf(title: String(localized: "Similar Titles", comment: "Shelf of titles like this one"),
-                                  accent: Theme.palette[1]) {
+                                  accent: Theme.palette[1], spacing: RequestCard.gap, liftRoom: RequestCard.liftRoom) {
                                 ForEach(similar) { SeerrPosterCard(title: $0, client: client, width: RequestCard.posterWidth) }
                             }
                             .tvFocusSection()
@@ -594,8 +595,6 @@ struct RequestPersonView: View {
     @State private var titles: [SeerrTitle] = []
     @State private var loaded = false
 
-    private let columns = [GridItem(.adaptive(minimum: RequestCard.posterWidth), spacing: 24)]
-
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 28) {
@@ -623,7 +622,7 @@ struct RequestPersonView: View {
                         .foregroundStyle(Theme.textSecondary)
                         .focusable()
                 } else if let client = requests.client {
-                    LazyVGrid(columns: columns, spacing: 32) {
+                    LazyVGrid(columns: RequestCard.grid, spacing: RequestCard.gridRows) {
                         ForEach(titles) { SeerrPosterCard(title: $0, client: client) }
                     }
                 }

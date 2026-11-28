@@ -75,7 +75,7 @@ struct RequestsView: View {
                             Shelf(title: requests.user?.seesAllRequests == true
                                   ? String(localized: "Recent Requests", comment: "Shelf of what everyone has asked for lately")
                                   : String(localized: "Your Requests", comment: "Shelf of the titles the viewer has asked for"),
-                                  accent: Theme.palette[0]) {
+                                  accent: Theme.palette[0], spacing: RequestCard.gap, liftRoom: RequestCard.liftRoom) {
                                 ForEach(recent) { entry in
                                     SeerrRequestCard(entry: entry, client: client, naming: requests.user?.seesAllRequests == true)
                                 }
@@ -129,7 +129,8 @@ struct RequestsView: View {
         case .studios:
             // Shown with the rest, not ahead of it: they need no loading.
             if loaded, !shelves.isEmpty {
-                Shelf(title: String(localized: "Studios", comment: "Shelf of film studios"), accent: Theme.palette[2]) {
+                Shelf(title: String(localized: "Studios", comment: "Shelf of film studios"), accent: Theme.palette[2],
+                      spacing: RequestCard.gap, liftRoom: RequestCard.liftRoom) {
                     ForEach(SeerrCompany.studios) { SeerrCompanyCard(company: $0, studio: true, client: client) }
                 }
                 .tvFocusSection()
@@ -137,7 +138,7 @@ struct RequestsView: View {
         case .networks:
             if loaded, !shelves.isEmpty {
                 Shelf(title: String(localized: "Networks", comment: "Shelf of television networks and streaming services"),
-                      accent: Theme.palette[3]) {
+                      accent: Theme.palette[3], spacing: RequestCard.gap, liftRoom: RequestCard.liftRoom) {
                     ForEach(SeerrCompany.networks) { SeerrCompanyCard(company: $0, studio: false, client: client) }
                 }
                 .tvFocusSection()
@@ -150,7 +151,8 @@ struct RequestsView: View {
         if let titles = shelves[kind], !titles.isEmpty {
             // Its heading leads to the whole of it, as each of Seerr's does.
             Shelf(title: Self.name(of: kind), accent: Self.accent(of: kind),
-                  seeAll: { path.append(RequestRoute.browse(.shelf(kind, Self.name(of: kind)))) }) {
+                  seeAll: { path.append(RequestRoute.browse(.shelf(kind, Self.name(of: kind)))) },
+                  spacing: RequestCard.gap, liftRoom: RequestCard.liftRoom) {
                 ForEach(titles) { SeerrPosterCard(title: $0, client: client, width: RequestCard.posterWidth) }
             }
             // A section, so a shelf isn't stepped over from further along
@@ -164,7 +166,7 @@ struct RequestsView: View {
         if !genres.isEmpty {
             Shelf(title: movies ? String(localized: "Movie Genres", comment: "Shelf of the genres of films")
                                 : String(localized: "Show Genres", comment: "Shelf of the genres of TV shows"),
-                  accent: movies ? Theme.palette[2] : Theme.palette[3]) {
+                  accent: movies ? Theme.palette[2] : Theme.palette[3], spacing: RequestCard.gap, liftRoom: RequestCard.liftRoom) {
                 ForEach(genres) { SeerrGenreCard(genre: $0, movies: movies, client: client) }
             }
             .tvFocusSection()
@@ -380,8 +382,6 @@ struct RequestSearchView: View {
     /// What was last looked for and answered: "No results" waits for it.
     @State private var answered = ""
 
-    private let columns = [GridItem(.adaptive(minimum: RequestCard.posterWidth), spacing: 24)]
-
     var body: some View {
         ScrollView {
             if results.isEmpty && query.count >= 2 && answered == query {
@@ -389,7 +389,7 @@ struct RequestSearchView: View {
                     .foregroundStyle(Theme.textSecondary)
                     .padding(.top, 100)
             } else if let client = requests.client {
-                LazyVGrid(columns: columns, spacing: 32) {
+                LazyVGrid(columns: RequestCard.grid, spacing: RequestCard.gridRows) {
                     ForEach(results) { SeerrPosterCard(title: $0, client: client) }
                 }
                 .padding(.horizontal, Theme.pageMargin)
