@@ -1112,6 +1112,10 @@ struct Shelf<Content: View>: View {
     var accent: (Color, Color)? = nil
     /// When set, a "See all" link appears on the right of the header.
     var seeAll: (() -> Void)? = nil
+    /// Between one card and the next.
+    var spacing: CGFloat = 32
+    /// Above and below the cards, for the focused one's lift.
+    var liftRoom: CGFloat = 30
     @ViewBuilder let content: Content
 
     var body: some View {
@@ -1119,10 +1123,10 @@ struct Shelf<Content: View>: View {
             ShelfHeader(title: title, eyebrow: eyebrow, accent: accent ?? theme.colors.palette[0], seeAll: seeAll)
                 .padding(.horizontal, 4)
             SideScroll {
-                LazyHStack(alignment: .top, spacing: 32) {
+                LazyHStack(alignment: .top, spacing: spacing) {
                     content
                 }
-                .padding(.vertical, 30)   // room for the focus lift effect
+                .padding(.vertical, liftRoom)
                 .padding(.horizontal, 4)
             }
             .scrollClipDisabled(barEdge == nil)

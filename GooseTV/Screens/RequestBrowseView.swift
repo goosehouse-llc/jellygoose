@@ -16,6 +16,17 @@ enum RequestCard {
     static let request = Theme.isPhone ? CGSize(width: 288, height: 156) : CGSize(width: 384, height: 200)
     #endif
 
+    /// Between one card and the next along a row: on a phone Seerr's own
+    /// 16, which shows more of a row on the narrow screen; the television's
+    /// wider gap elsewhere.
+    static let gap: CGFloat = Theme.isPhone ? 16 : 32
+    /// Above and below a row, for the focused card's lift. A phone's cards
+    /// only dip under the finger, and the room left the rows far apart.
+    static let liftRoom: CGFloat = Theme.isPhone ? 6 : 30
+    /// A page of posters: across and down. Seerr's own on a phone.
+    static let grid = [GridItem(.adaptive(minimum: posterWidth), spacing: Theme.isPhone ? 16 : 24)]
+    static let gridRows: CGFloat = Theme.isPhone ? 20 : 32
+
     /// A card's own colour where it has no picture: the scheme's surface, a
     /// little see-through over the wallpaper, as Seerr's grey cards are.
     static var surface: Color { Theme.surface.opacity(0.9) }
@@ -246,8 +257,6 @@ struct RequestBrowseView: View {
     @State private var fetching = false
     @State private var problem: String?
 
-    private let columns = [GridItem(.adaptive(minimum: RequestCard.posterWidth), spacing: 24)]
-
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
@@ -265,7 +274,7 @@ struct RequestBrowseView: View {
                 }
                 if let client = requests.client {
                     // Clear of the heading, which a focused card's lift reaches.
-                    LazyVGrid(columns: columns, spacing: 32) {
+                    LazyVGrid(columns: RequestCard.grid, spacing: RequestCard.gridRows) {
                         ForEach(titles) { SeerrPosterCard(title: $0, client: client) }
                         if loaded, page < pages {
                             // In sight at the foot of what's listed: time for
