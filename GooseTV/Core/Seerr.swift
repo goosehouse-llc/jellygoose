@@ -643,6 +643,8 @@ struct SeerrSettings: Decodable {
     let series4kEnabled: Bool?
     let partialRequestsEnabled: Bool?
     let enableSpecialEpisodes: Bool?
+    /// Seerr's "Enable Image Caching": whether it hands out pictures itself.
+    let cacheImages: Bool?
 }
 
 enum SeerrError: LocalizedError {
@@ -665,6 +667,9 @@ final class SeerrClient: @unchecked Sendable {
     /// Signs in afresh when Seerr says the session has run out: a month,
     /// usually. Set by whoever made the client.
     var signIn: (@MainActor @Sendable () async throws -> Void)?
+    /// Whether Seerr hands out the pictures, as its settings say. Set on the
+    /// main actor, where the pictures are asked for, before anything is.
+    var cachesImages = true
     // The session is a cookie, which the shared session keeps between launches.
     private let session = URLSession.shared
 
@@ -954,9 +959,12 @@ final class SeerrClient: @unchecked Sendable {
 
     // MARK: Pictures
 
-    // By way of Seerr itself, which fetches them from The Movie Database: the
-    // app talks to the viewer's own servers and nowhere else. The sizes are
-    // the database's own, and posters, backdrops and faces don't share them.
+    // By way of Seerr itself, which fetches them from The Movie Database,
+    // where its image caching is on. Where it's off (as Seerr comes), Seerr
+    // has turned its picture address away since 3.5.2 ("Image caching is
+    // disabled"), and its own pages fetch them from the database directly:
+    // so does the app then. The sizes are the database's own, and posters,
+    // backdrops and faces don't share them.
 
     func poster(_ path: String?) -> URL? { picture(path, size: "w500") }
 
@@ -988,7 +996,10 @@ final class SeerrClient: @unchecked Sendable {
             path = "/" + rest[slash...].drop { $0 == "/" }
         }
         guard path.hasPrefix("/") else { return nil }
-        return URL(string: base.absoluteString.trimmingCharacters(in: CharacterSet(charactersIn: "/")) + "/imageproxy/tmdb/t/p/\(size)\(path)")
+        let host = cachesImages
+            ? base.absoluteString.trimmingCharacters(in: CharacterSet(charactersIn: "/")) + "/imageproxy/tmdb"
+            : "https://image.tmdb.org"
+        return URL(string: host + "/t/p/\(size)\(path)")
     }
 
     private static var language: String {
@@ -1100,7 +1111,13 @@ final class Requests: ObservableObject {
             try? await signIn(client, server: server)
         }
         guard self.client === client else { return }
+        await loadSettings(of: client)
+    }
+
+    /// Seerr's settings, and with them where its pictures come from.
+    private func loadSettings(of client: SeerrClient) async {
         settings = await client.settings()
+        if let caching = settings?.cacheImages { client.cachesImages = caching }
     }
 
     /// For an account with no Seerr connected here: whether there's one to
@@ -1176,7 +1193,7 @@ final class Requests: ObservableObject {
         changed?(true)
         offered = nil
         client = connecting
-        settings = await connecting.settings()
+        await loadSettings(of: connecting)
         revision += 1
     }
 
