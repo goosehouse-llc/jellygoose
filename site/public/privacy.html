@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Privacy — JellyGoose</title>
-<meta name="description" content="JellyGoose collects nothing. It talks to your own media server and nowhere else.">
+<meta name="description" content="JellyGoose collects nothing. It talks to your own servers, never to us.">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,13 +34,14 @@
 <main>
   <section class="policy">
     <h1>Privacy</h1>
-    <p class="updated">Last updated 4 November 2026</p>
+    <p class="updated">Last updated 28 November 2026</p>
 
     <p><strong>JellyGoose collects nothing.</strong> There are no accounts, no analytics,
-      no advertising, no tracking, and no third-party services of any kind. The app talks
-      to the media server you point it at and to nowhere else — not even to us. The one
-      exception is described under “Finding your server”, and it never leaves your home
-      network.</p>
+      no advertising and no tracking. The app talks to the media server you point it at,
+      and to a Seerr if you connect one, and never to us. There are two exceptions, both
+      described below: while you set it up, it asks your home network where your server
+      is; and if your Seerr doesn't keep its own copies of artwork, the pictures under
+      Requests come from The Movie Database.</p>
 
     <h2>What stays on your device</h2>
     <p>Everything the app remembers is stored on the Apple&nbsp;TV, iPhone, iPad or Mac itself:</p>
@@ -76,6 +77,18 @@
       what you play, and reports your playback position so that Continue Watching works
       across your devices. That information goes to your server and stays there, under
       whatever policy that server keeps. We have no access to it.</p>
+
+    <h2>Requests through Seerr</h2>
+    <p>If you connect a Seerr, a server for requesting films and shows that runs beside
+      your media server, the app signs in to it with your media server account and asks it
+      what there is to request. The posters and pictures shown there come through your
+      Seerr when its “Enable Image Caching” setting is on. When it's off, which is how
+      Seerr comes, Seerr won't hand them out, and the app fetches them straight from
+      The Movie Database (image.tmdb.org), as Seerr's own web pages do. Those requests
+      carry nothing about you beyond what any request for a picture does: your device's
+      internet address and which picture it wants. The Movie Database's own privacy
+      policy covers them. To keep them from happening, turn on image caching in Seerr's
+      General settings.</p>
 
     <h2>Children</h2>
     <p>The app collects no personal information from anyone, including children. What it

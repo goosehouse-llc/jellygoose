@@ -91,7 +91,7 @@ New in 1.2: a new Home, quicker starts and lossless 7.1 sound from TrueHD and DT
 SAY GOODBYE TO RE-ENCODING ON YOUR SERVER!!
 ```
 
-## Description — 3973 / 4000
+## Description — 3900 / 4000
 
 1.8's. A Music and Audiobooks paragraph after Live TV; pins on Home and
 video playlists under Libraries; iCloud under Everyone Gets Their Own; each
@@ -156,7 +156,7 @@ MAKE IT YOURS
 Six colour schemes, one a true black for OLED, six app icons, and Home's rows in the order you choose. In nine languages.
 
 NOTHING PHONES HOME
-No accounts, no subscription, no analytics, no advertising, no third parties. JellyGoose talks to your own servers and nowhere else, apart from asking your own network where they are during setup.
+No accounts, no subscription, no analytics, no advertising, no tracking. JellyGoose talks to your own servers, never to us.
 
 Requires your own Jellyfin server. Free to try for 7 days, then one purchase unlocks it here and on iPhone and iPad. Not affiliated with or endorsed by the Jellyfin project.
 ```

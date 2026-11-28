@@ -66,7 +66,7 @@ MAKE IT YOURS
 Six colour schemes, one a true black, and Home's rows in the order you choose. In nine languages.
 
 NOTHING PHONES HOME
-No accounts, no subscription, no analytics, no advertising, no third parties. JellyGoose talks to your own servers and nowhere else, apart from asking your own network where they are during setup.
+No accounts, no subscription, no analytics, no advertising, no tracking. JellyGoose talks to your own servers, never to us.
 
 Requires your own Jellyfin server. Free to try for 7 days, then one purchase unlocks it on your Mac, iPhone, iPad and Apple TV. Not affiliated with or endorsed by the Jellyfin project.
 ```
